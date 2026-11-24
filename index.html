@@ -1,0 +1,2405 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Petualangan Seru dalam Sains — E-Book Interaktif</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts: Lora (Serif untuk isi buku) & Plus Jakarta Sans (UI modern) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400..700;1,400..700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            serifBook: ['Lora', 'Georgia', 'serif'],
+            sansUi: ['Plus Jakarta Sans', 'system-ui', 'sans-serif'],
+          },
+          colors: {
+            kaizen: {
+              teal: '#0f766e',
+              amber: '#d97706',
+              navy: '#0f172a',
+              paper: '#fdfbf7',
+              sepia: '#f4ecd8',
+              darkPaper: '#1e242b',
+            }
+          }
+        }
+      }
+    };
+  </script>
+
+  <style>
+    /* Variabel Tema Membaca */
+    :root {
+      --bg-app: #e2e8f0;
+      --bg-page: #fdfbf7;
+      --bg-page-alt: #f8f5ee;
+      --text-primary: #1e293b;
+      --text-secondary: #475569;
+      --border-page: #e2dcd0;
+      --accent-color: #0f766e;
+      --box-bg: #f1f5f9;
+      --box-border: #cbd5e1;
+      --book-font-size: 15px;
+    }
+
+    body.theme-sepia {
+      --bg-app: #dfd3be;
+      --bg-page: #f5edd9;
+      --bg-page-alt: #efe5cc;
+      --text-primary: #3b2f2f;
+      --text-secondary: #5c4b43;
+      --border-page: #d5c5a7;
+      --accent-color: #9a3412;
+      --box-bg: #ebe0c7;
+      --box-border: #cbb998;
+    }
+
+    body.theme-dark {
+      --bg-app: #0b1120;
+      --bg-page: #18202c;
+      --bg-page-alt: #141b26;
+      --text-primary: #e2e8f0;
+      --text-secondary: #94a3b8;
+      --border-page: #2d3748;
+      --accent-color: #2dd4bf;
+      --box-bg: #1e293b;
+      --box-border: #334155;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background-color: var(--bg-app);
+      color: var(--text-primary);
+      transition: background-color 0.3s ease, color 0.3s ease;
+      overflow-x: hidden;
+    }
+
+    /* Tekstur kertas halus menggunakan radial/linear SVG pattern */
+    .paper-surface {
+      background-color: var(--bg-page);
+      background-image: 
+        radial-gradient(rgba(120, 113, 108, 0.04) 1px, transparent 0),
+        linear-gradient(to right, rgba(0, 0, 0, 0.02) 0%, transparent 4%, transparent 96%, rgba(0, 0, 0, 0.03) 100%);
+      background-size: 18px 18px, 100% 100%;
+      color: var(--text-primary);
+      border-color: var(--border-page);
+      transition: background-color 0.3s ease, color 0.3s ease;
+    }
+
+    /* Efek bayangan lipatan tengah buku (Book Spine Shadow) */
+    .spine-shadow-left {
+      box-shadow: inset -18px 0 28px -12px rgba(0, 0, 0, 0.16), -4px 8px 20px rgba(0, 0, 0, 0.12);
+    }
+
+    .spine-shadow-right {
+      box-shadow: inset 18px 0 28px -12px rgba(0, 0, 0, 0.16), 4px 8px 20px rgba(0, 0, 0, 0.12);
+    }
+
+    .single-page-shadow {
+      box-shadow: 0 12px 32px -4px rgba(0, 0, 0, 0.18), 0 4px 12px -2px rgba(0, 0, 0, 0.08);
+    }
+
+    /* Tipografi Konten Buku */
+    .book-body {
+      font-family: 'Lora', Georgia, serif;
+      font-size: var(--book-font-size);
+      line-height: 1.72;
+    }
+
+    .book-body p {
+      margin-bottom: 0.75rem;
+      text-align: justify;
+    }
+
+    /* Animasi 3D Page Flip */
+    .book-stage {
+      perspective: 2200px;
+    }
+
+    @keyframes flipNextAnim {
+      0% {
+        transform: rotateY(0deg) scale(1);
+        filter: brightness(1);
+      }
+      45% {
+        transform: rotateY(-85deg) scale(0.98);
+        filter: brightness(0.86);
+      }
+      55% {
+        transform: rotateY(85deg) scale(0.98);
+        filter: brightness(0.86);
+      }
+      100% {
+        transform: rotateY(0deg) scale(1);
+        filter: brightness(1);
+      }
+    }
+
+    @keyframes flipPrevAnim {
+      0% {
+        transform: rotateY(0deg) scale(1);
+        filter: brightness(1);
+      }
+      45% {
+        transform: rotateY(85deg) scale(0.98);
+        filter: brightness(0.86);
+      }
+      55% {
+        transform: rotateY(-85deg) scale(0.98);
+        filter: brightness(0.86);
+      }
+      100% {
+        transform: rotateY(0deg) scale(1);
+        filter: brightness(1);
+      }
+    }
+
+    .anim-flip-next {
+      animation: flipNextAnim 0.48s cubic-bezier(0.25, 0.8, 0.25, 1);
+      transform-style: preserve-3d;
+    }
+
+    .anim-flip-prev {
+      animation: flipPrevAnim 0.48s cubic-bezier(0.25, 0.8, 0.25, 1);
+      transform-style: preserve-3d;
+    }
+
+    /* Scrollbar halus di dalam halaman jika konten padat */
+    .page-scroll::-webkit-scrollbar {
+      width: 5px;
+    }
+    .page-scroll::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    .page-scroll::-webkit-scrollbar-thumb {
+      background: rgba(148, 163, 184, 0.45);
+      border-radius: 9999px;
+    }
+    .page-scroll::-webkit-scrollbar-thumb:hover {
+      background: rgba(100, 116, 139, 0.7);
+    }
+
+    /* Highlight pencarian */
+    mark.search-hl {
+      background-color: #fde047;
+      color: #1e293b;
+      padding: 0 3px;
+      border-radius: 4px;
+      font-weight: 600;
+    }
+
+    /* Kotak Edukatif di Buku */
+    .sci-box {
+      background-color: var(--box-bg);
+      border: 1px solid var(--box-border);
+      border-radius: 0.75rem;
+      padding: 0.85rem 1rem;
+      margin-bottom: 0.85rem;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col select-none sm:select-auto">
+
+  <!-- TOP NAVBAR / READER TOOLBAR -->
+  <header class="sticky top-0 z-30 backdrop-blur-md bg-slate-900/95 text-white border-b border-slate-700/70 px-3 sm:px-6 py-2.5 shadow-md">
+    <div class="max-w-7xl mx-auto flex items-center justify-between gap-2">
+      <!-- Kiri: Tombol Daftar Isi & Judul -->
+      <div class="flex items-center gap-2.5 min-w-0">
+        <button id="btnToggleDrawer" type="button" title="Buka Daftar Isi & Pencarian"
+          class="p-2.5 rounded-xl bg-teal-600 hover:bg-teal-500 active:scale-95 transition flex items-center gap-2 text-sm font-semibold shadow-sm">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h10" />
+          </svg>
+          <span class="hidden md:inline">Daftar Isi</span>
+        </button>
+
+        <div class="truncate">
+          <h1 class="text-xs sm:text-sm md:text-base font-bold tracking-tight truncate text-amber-300">
+            Petualangan Seru dalam Sains
+          </h1>
+          <p class="text-[11px] text-slate-300 truncate hidden sm:block">
+            Andika Setia Pratama • Kaizen Sarana Edukasi (2024)
+          </p>
+        </div>
+      </div>
+
+      <!-- Kanan: Kontrol Tema, Font, Bookmark, Suara -->
+      <div class="flex items-center gap-1.5 sm:gap-2">
+        <!-- Pencarian Cepat (Desktop) -->
+        <button id="btnOpenSearch" type="button" title="Cari Kata Kunci"
+          class="p-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 transition flex items-center gap-1.5 text-xs font-medium">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <circle cx="11" cy="11" r="7" />
+            <path stroke-linecap="round" d="M20 20l-3.5-3.5" />
+          </svg>
+          <span class="hidden lg:inline">Cari</span>
+        </button>
+
+        <!-- Pengaturan Ukuran Huruf -->
+        <div class="hidden sm:flex items-center bg-slate-800 rounded-xl p-1 border border-slate-700" title="Ukuran Huruf">
+          <button type="button" data-font="small" class="font-btn px-2 py-1 text-xs rounded-lg hover:bg-slate-700 transition">A-</button>
+          <button type="button" data-font="medium" class="font-btn px-2 py-1 text-xs font-bold bg-teal-600 text-white rounded-lg transition">A</button>
+          <button type="button" data-font="large" class="font-btn px-2 py-1 text-xs rounded-lg hover:bg-slate-700 transition">A+</button>
+        </div>
+
+        <!-- Pengaturan Tema Baca -->
+        <div class="flex items-center bg-slate-800 rounded-xl p-1 border border-slate-700" title="Mode Baca">
+          <button type="button" data-theme="light" class="theme-btn w-7 h-7 rounded-lg flex items-center justify-center bg-white text-slate-900 font-bold text-xs shadow-sm" title="Light Mode">☀️</button>
+          <button type="button" data-theme="sepia" class="theme-btn w-7 h-7 rounded-lg flex items-center justify-center text-amber-200 hover:bg-slate-700 text-xs" title="Sepia Paper Mode">📜</button>
+          <button type="button" data-theme="dark" class="theme-btn w-7 h-7 rounded-lg flex items-center justify-center text-slate-300 hover:bg-slate-700 text-xs" title="Dark Mode">🌙</button>
+        </div>
+
+        <!-- Bookmark Halaman -->
+        <button id="btnBookmark" type="button" title="Tandai Halaman Ini (Bookmark)"
+          class="p-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 transition">
+          <svg id="iconBookmark" class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
+          </svg>
+        </button>
+
+        <!-- Mute / Unmute Suara Kertas -->
+        <button id="btnSound" type="button" title="Suara Membalik Kertas: Aktif"
+          class="p-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-teal-400 transition">
+          <svg id="iconSoundOn" class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M11 5L6 9H2v6h4l5 4V5zM15.54 8.46a5 5 0 010 7.07M19.07 4.93a10 10 0 010 14.14" />
+          </svg>
+          <svg id="iconSoundOff" class="w-4 h-4 hidden text-rose-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M11 5L6 9H2v6h4l5 4V5zM23 9l-6 6M17 9l6 6" />
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Progress Bar Pembacaan -->
+    <div class="max-w-7xl mx-auto mt-2">
+      <div class="w-full h-1.5 bg-slate-800 rounded-full overflow-hidden">
+        <div id="readingProgress" class="h-full bg-gradient-to-r from-teal-400 via-emerald-400 to-amber-400 transition-all duration-300" style="width: 2.5%;"></div>
+      </div>
+    </div>
+  </header>
+
+  <!-- SIDEBAR DRAWER (DAFTAR ISI, PENCARIAN & BOOKMARK) -->
+  <div id="drawerBackdrop" class="fixed inset-0 bg-slate-950/60 backdrop-blur-xs z-40 hidden transition-opacity"></div>
+  <aside id="sideDrawer" class="fixed top-0 left-0 bottom-0 w-80 sm:w-96 max-w-[90vw] bg-slate-900 text-slate-100 z-50 transform -translate-x-full transition-transform duration-300 flex flex-col shadow-2xl border-r border-slate-700">
+    <div class="p-4 border-b border-slate-800 flex items-center justify-between">
+      <div class="flex items-center gap-2">
+        <span class="w-8 h-8 rounded-lg bg-teal-600 flex items-center justify-center font-bold text-white">🔬</span>
+        <div>
+          <h2 class="font-bold text-sm text-white">Navigasi E-Book</h2>
+          <p class="text-[11px] text-slate-400">40 Halaman • 10 Bab Lengkap</p>
+        </div>
+      </div>
+      <button id="btnCloseDrawer" type="button" class="p-2 rounded-lg hover:bg-slate-800 text-slate-400 hover:text-white">
+        ✕
+      </button>
+    </div>
+
+    <!-- Tab Drawer: Daftar Isi | Pencarian | Bookmark -->
+    <div class="grid grid-cols-3 bg-slate-950 p-1 m-3 rounded-xl border border-slate-800 text-xs font-semibold">
+      <button type="button" data-tab="toc" class="drawer-tab py-2 rounded-lg bg-teal-600 text-white transition">Daftar Isi</button>
+      <button type="button" data-tab="search" class="drawer-tab py-2 rounded-lg text-slate-400 hover:text-white transition">Cari Kata</button>
+      <button type="button" data-tab="bookmarks" class="drawer-tab py-2 rounded-lg text-slate-400 hover:text-white transition">Penanda (<span id="bmCount">0</span>)</button>
+    </div>
+
+    <!-- Tab Content: Daftar Isi -->
+    <div id="tabToc" class="flex-1 overflow-y-auto px-3 pb-6 space-y-1 page-scroll"></div>
+
+    <!-- Tab Content: Pencarian -->
+    <div id="tabSearch" class="hidden flex-1 flex flex-col overflow-hidden px-3 pb-4">
+      <div class="relative mb-3">
+        <input id="searchInput" type="text" placeholder="Ketik kata kunci (misal: kapilaritas, Newton, pH)..."
+          class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-slate-400 focus:outline-none focus:border-teal-500" />
+        <button id="btnClearSearch" type="button" class="hidden absolute right-2.5 top-2.5 text-slate-400 hover:text-white text-xs">✕</button>
+      </div>
+      <p id="searchStatus" class="text-[11px] text-slate-400 mb-2">Masukkan minimal 2 huruf untuk mencari di seluruh buku.</p>
+      <div id="searchResults" class="flex-1 overflow-y-auto space-y-2 page-scroll"></div>
+    </div>
+
+    <!-- Tab Content: Bookmark -->
+    <div id="tabBookmarks" class="hidden flex-1 overflow-y-auto px-3 pb-6 space-y-2 page-scroll">
+      <p class="text-xs text-slate-400 text-center py-6">Belum ada halaman yang ditandai. Klik ikon pita di bilah atas untuk menandai halaman.</p>
+    </div>
+
+    <!-- Pengaturan Font Mobile di Drawer -->
+    <div class="p-3 border-t border-slate-800 sm:hidden flex items-center justify-between text-xs">
+      <span class="text-slate-400">Ukuran Teks Buku:</span>
+      <div class="flex gap-1 bg-slate-800 p-1 rounded-lg">
+        <button type="button" data-font="small" class="font-btn px-2.5 py-1 rounded">Kecil</button>
+        <button type="button" data-font="medium" class="font-btn px-2.5 py-1 rounded bg-teal-600 text-white">Sedang</button>
+        <button type="button" data-font="large" class="font-btn px-2.5 py-1 rounded">Besar</button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN FLIPBOOK READER STAGE -->
+  <main id="touchArea" class="flex-1 flex flex-col items-center justify-center px-2 sm:px-4 md:px-6 py-3 sm:py-5">
+    
+    <!-- Container Buku 3D -->
+    <div class="book-stage w-full max-w-6xl flex items-center justify-center">
+      <div id="bookContainer" class="w-full grid grid-cols-1 lg:grid-cols-2 rounded-2xl overflow-hidden transition-all duration-300">
+        <!-- Halaman Kiri (atau Halaman Tunggal di Mobile) -->
+        <article id="leftPage" class="paper-surface spine-shadow-left border rounded-2xl lg:rounded-r-none lg:rounded-l-2xl h-[74vh] sm:h-[78vh] max-h-[820px] min-h-[520px] flex flex-col justify-between p-4 sm:p-6 md:p-8 relative overflow-hidden">
+          <!-- Diisi via JS -->
+        </article>
+
+        <!-- Halaman Kanan (Hanya tampil pada mode spread desktop lg:flex) -->
+        <article id="rightPage" class="hidden lg:flex paper-surface spine-shadow-right border border-l-0 rounded-r-2xl h-[74vh] sm:h-[78vh] max-h-[820px] min-h-[520px] flex-col justify-between p-4 sm:p-6 md:p-8 relative overflow-hidden">
+          <!-- Diisi via JS -->
+        </article>
+      </div>
+    </div>
+
+    <!-- BOTTOM NAVIGATION CONTROLS -->
+    <div class="w-full max-w-4xl mt-3 sm:mt-4 flex flex-wrap items-center justify-between gap-2 bg-slate-900/90 backdrop-blur-md text-white px-3 sm:px-5 py-2.5 rounded-2xl shadow-lg border border-slate-700/80">
+      
+      <!-- Tombol Sebelumnya -->
+      <button id="btnPrev" type="button"
+        class="px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-teal-600 disabled:opacity-40 disabled:hover:bg-slate-800 transition flex items-center gap-1.5 text-xs sm:text-sm font-semibold active:scale-95">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+        </svg>
+        <span>Sebelumnya</span>
+      </button>
+
+      <!-- Lompat ke Nomor Halaman -->
+      <div class="flex items-center gap-2 text-xs sm:text-sm">
+        <span class="text-slate-400 hidden sm:inline">Halaman</span>
+        <form id="jumpPageForm" class="flex items-center gap-1.5">
+          <input id="pageInput" type="number" min="1" max="40" value="1" aria-label="Nomor Halaman"
+            class="w-14 text-center bg-slate-800 border border-slate-600 rounded-lg py-1 px-1.5 font-bold text-amber-300 focus:outline-none focus:border-teal-400" />
+          <span class="text-slate-300 font-medium">/ 40</span>
+        </form>
+        <span id="spreadIndicator" class="hidden md:inline-block text-[11px] text-teal-300 bg-teal-950/80 border border-teal-800 px-2 py-0.5 rounded-md">
+          Tampilan Sampul
+        </span>
+      </div>
+
+      <!-- Tombol Berikutnya -->
+      <button id="btnNext" type="button"
+        class="px-3.5 py-2 rounded-xl bg-teal-600 hover:bg-teal-500 disabled:opacity-40 disabled:hover:bg-teal-600 transition flex items-center gap-1.5 text-xs sm:text-sm font-semibold active:scale-95 shadow-sm">
+        <span>Berikutnya</span>
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+        </svg>
+      </button>
+    </div>
+
+    <!-- Petunjuk Pintasan -->
+    <p class="text-[11px] text-slate-600 dark:text-slate-400 mt-2 text-center">
+      Tips: Gunakan tombol panah keyboard <kbd class="px-1.5 py-0.5 bg-slate-200 text-slate-800 rounded text-[10px] font-bold">←</kbd> <kbd class="px-1.5 py-0.5 bg-slate-200 text-slate-800 rounded text-[10px] font-bold">→</kbd> atau geser (swipe) layar untuk membalik halaman.
+    </p>
+  </main>
+
+  <!-- Toast Notification (Pengganti alert) -->
+  <div id="toastMsg" class="fixed bottom-20 left-1/2 -translate-x-1/2 z-50 bg-slate-900 text-white text-xs font-medium px-4 py-2.5 rounded-full shadow-xl border border-teal-500/40 opacity-0 pointer-events-none transition-opacity duration-300">
+    Pesan notifikasi
+  </div>
+
+  <!-- SCRIPT DATA BUKU & LOGIKA INTERAKTIF -->
+  <script>
+    /*************************************************************************
+     * 1. WEB AUDIO API: EFEK SUARA MEMBALIK KERTAS HALUS
+     *************************************************************************/
+    let soundEnabled = true;
+    let audioCtx = null;
+
+    function playPageFlipSound() {
+      if (!soundEnabled) return;
+      try {
+        if (!audioCtx) {
+          audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        }
+        if (audioCtx.state === 'suspended') {
+          audioCtx.resume();
+        }
+        const duration = 0.24;
+        const bufferSize = Math.floor(audioCtx.sampleRate * duration);
+        const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+        const data = buffer.getChannelData(0);
+
+        for (let i = 0; i < bufferSize; i++) {
+          const t = i / bufferSize;
+          // Envelope lembut menyerupai gesekan kertas
+          const env = Math.sin(t * Math.PI) * Math.pow(1 - t, 1.3);
+          data[i] = (Math.random() * 2 - 1) * env * 0.28;
+        }
+
+        const noise = audioCtx.createBufferSource();
+        noise.buffer = buffer;
+
+        const filter = audioCtx.createBiquadFilter();
+        filter.type = 'bandpass';
+        filter.frequency.setValueAtTime(950, audioCtx.currentTime);
+        filter.frequency.exponentialRampToValueAtTime(2200, audioCtx.currentTime + duration);
+        filter.Q.value = 1.4;
+
+        noise.connect(filter);
+        filter.connect(audioCtx.destination);
+        noise.start();
+      } catch (e) {
+        // Abaikan jika browser memblokir audio otomatis
+      }
+    }
+
+    /*************************************************************************
+     * 2. DAFTAR ISI & STRUKTUR 40 HALAMAN BUKU LENGKAP
+     *************************************************************************/
+    const tocItems = [
+      { title: "Sampul Depan", page: 1, badge: "Cover" },
+      { title: "Halaman Judul & Hak Cipta", page: 2, badge: "Info" },
+      { title: "Daftar Isi Interaktif", page: 3, badge: "TOC" },
+      { title: "Kata Pengantar", page: 4, badge: "Pengantar" },
+      { title: "BAB 1: Pengenalan Ilmu Pengetahuan Alam", page: 5, badge: "Hal 5–7" },
+      { title: "BAB 2: Alat dan Bahan Eksperimen", page: 8, badge: "Hal 8–11" },
+      { title: "BAB 3: Eksperimen Sederhana dengan Air", page: 12, badge: "Hal 12–14" },
+      { title: "BAB 4: Balon Statis & Listrik Statis", page: 15, badge: "Hal 15–17" },
+      { title: "BAB 5: Eksperimen Kimia Menyenangkan", page: 18, badge: "Hal 18–20" },
+      { title: "BAB 6: Eksperimen Fisika Seru", page: 21, badge: "Hal 21–24" },
+      { title: "BAB 7: Eksperimen Biologi Mudah", page: 25, badge: "Hal 25–27" },
+      { title: "BAB 8: Ekologi dan Lingkungan", page: 28, badge: "Hal 28–30" },
+      { title: "BAB 9: Sains dalam Kehidupan Sehari-hari", page: 31, badge: "Hal 31–33" },
+      { title: "BAB 10: Projek Akhir Sains", page: 34, badge: "Hal 34–38" },
+      { title: "Daftar Pustaka", page: 39, badge: "Hal 39" },
+      { title: "Sampul Belakang", page: 40, badge: "Penutup" }
+    ];
+
+    /* Helper untuk merender kuis interaktif di dalam halaman buku */
+    function renderQuizCard(id, question, hint, answer) {
+      return `
+        <div class="sci-box mt-2 border-l-4 border-l-amber-500">
+          <div class="flex items-center justify-between gap-2 mb-1.5">
+            <span class="text-xs font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400">✍️ Latihan Interaktif</span>
+            <button type="button" onclick="toggleHint('${id}')" class="text-[11px] font-semibold text-teal-600 dark:text-teal-400 hover:underline">💡 Petunjuk</button>
+          </div>
+          <p class="text-xs sm:text-sm font-semibold mb-2 !text-left">${question}</p>
+          <p id="hint-${id}" class="hidden text-xs italic text-slate-500 dark:text-slate-400 mb-2 bg-amber-500/10 p-2 rounded-lg">Petunjuk: ${hint}</p>
+          <textarea id="input-${id}" rows="2" placeholder="Tuliskan jawabanmu di sini..." class="w-full text-xs p-2 rounded-lg border border-slate-300 dark:border-slate-600 bg-white/80 dark:bg-slate-900/70 focus:outline-none focus:border-teal-500 mb-2"></textarea>
+          <div class="flex items-center justify-between">
+            <button type="button" onclick="checkQuizAnswer('${id}')" class="px-3 py-1.5 rounded-lg bg-teal-600 hover:bg-teal-500 text-white text-xs font-semibold transition">
+              Cek Pembahasan
+            </button>
+            <span id="status-${id}" class="text-[11px] font-semibold text-emerald-600 hidden">✓ Tersimpan</span>
+          </div>
+          <div id="ans-${id}" class="hidden mt-2 p-2.5 rounded-lg bg-emerald-500/15 border border-emerald-500/30 text-xs">
+            <strong class="text-emerald-700 dark:text-emerald-300">Kunci & Pembahasan:</strong> ${answer}
+          </div>
+        </div>
+      `;
+    }
+
+    /* Data 40 Halaman Buku */
+    const bookPages = [
+      // ==================== HALAMAN 1: SAMPUL DEPAN ====================
+      {
+        num: 1,
+        section: "Sampul Depan",
+        isCover: true,
+        html: `
+          <div class="h-full flex flex-col justify-between rounded-xl bg-gradient-to-br from-teal-900 via-slate-900 to-indigo-950 text-white p-5 sm:p-7 relative overflow-hidden border border-teal-500/30">
+            <!-- Dekorasi Ornamen Sains SVG -->
+            <div class="absolute -right-10 -top-10 opacity-20 pointer-events-none">
+              <svg class="w-56 h-56 text-teal-300" viewBox="0 0 200 200" fill="none" stroke="currentColor" stroke-width="2">
+                <ellipse cx="100" cy="100" rx="85" ry="30" transform="rotate(30 100 100)" />
+                <ellipse cx="100" cy="100" rx="85" ry="30" transform="rotate(-30 100 100)" />
+                <ellipse cx="100" cy="100" rx="85" ry="30" transform="rotate(90 100 100)" />
+                <circle cx="100" cy="100" r="12" fill="currentColor" />
+              </svg>
+            </div>
+
+            <div class="z-10">
+              <span class="inline-block px-3 py-1 rounded-full bg-amber-500/20 border border-amber-400/40 text-amber-300 text-[11px] font-bold tracking-widest uppercase mb-3">
+                E-Book Sains Praktis & Interaktif
+              </span>
+              <h1 class="text-2xl sm:text-3xl md:text-4xl font-extrabold leading-tight tracking-tight text-white">
+                Petualangan Seru dalam <span class="text-transparent bg-clip-text bg-gradient-to-r from-teal-300 to-amber-300">Sains</span>
+              </h1>
+              <p class="mt-2.5 text-xs sm:text-sm text-teal-100/90 font-medium leading-relaxed">
+                Eksperimen Menyenangkan dan Praktis untuk Semua Kalangan
+              </p>
+            </div>
+
+            <!-- Ilustrasi Utama: Labu Erlenmeyer, Roket, Atom & Tanaman -->
+            <div class="my-3 flex items-center justify-center z-10">
+              <svg class="w-52 h-44 sm:w-64 sm:h-52 drop-shadow-xl" viewBox="0 0 320 240" fill="none">
+                <!-- Lingkaran Latar -->
+                <circle cx="160" cy="120" r="95" fill="url(#coverGlow)" opacity="0.25" />
+                <defs>
+                  <radialGradient id="coverGlow">
+                    <stop offset="0%" stop-color="#2dd4bf" />
+                    <stop offset="100%" stop-color="#0f172a" stop-opacity="0" />
+                  </radialGradient>
+                </defs>
+                <!-- Labu Erlenmeyer -->
+                <path d="M135 55 H165 V85 L195 155 C198 162 193 170 185 170 H115 C107 170 102 162 105 155 L135 85 Z" fill="#1e293b" stroke="#5eead4" stroke-width="3"/>
+                <path d="M113 142 L187 142 L193 156 C195 161 191 167 185 167 H115 C109 167 105 161 107 156 Z" fill="#14b8a6" opacity="0.85"/>
+                <!-- Gelembung Reaksi -->
+                <circle cx="145" cy="130" r="5" fill="#fde047"/>
+                <circle cx="160" cy="115" r="4" fill="#5eead4"/>
+                <circle cx="150" cy="95" r="6" fill="#fbbf24"/>
+                <circle cx="153" cy="40" r="4" fill="#fde047"/>
+                <!-- Roket Sains -->
+                <g transform="translate(215, 50) rotate(22)">
+                  <path d="M20 0 C32 18 35 42 35 60 H5 C5 42 8 18 20 0 Z" fill="#f8fafc"/>
+                  <path d="M20 0 C27 11 30 22 31 30 H9 C10 22 13 11 20 0 Z" fill="#f59e0b"/>
+                  <circle cx="20" cy="40" r="6" fill="#0ea5e9"/>
+                  <path d="M5 48 L-5 65 L5 60 Z" fill="#ef4444"/>
+                  <path d="M35 48 L45 65 L35 60 Z" fill="#ef4444"/>
+                  <path d="M13 60 L20 78 L27 60 Z" fill="#fbbf24"/>
+                </g>
+                <!-- Tanaman / Ekologi -->
+                <g transform="translate(55, 115)">
+                  <rect x="12" y="45" width="26" height="20" rx="4" fill="#d97706"/>
+                  <path d="M25 45 V18" stroke="#4ade80" stroke-width="3.5" stroke-linecap="round"/>
+                  <path d="M25 32 C10 30 8 18 25 22" fill="#22c55e"/>
+                  <path d="M25 25 C40 22 42 10 25 15" fill="#4ade80"/>
+                </g>
+                <!-- Orbit Atom -->
+                <g transform="translate(75, 55)">
+                  <ellipse cx="22" cy="22" rx="20" ry="7" transform="rotate(35 22 22)" stroke="#38bdf8" stroke-width="2"/>
+                  <ellipse cx="22" cy="22" rx="20" ry="7" transform="rotate(-35 22 22)" stroke="#38bdf8" stroke-width="2"/>
+                  <circle cx="22" cy="22" r="4" fill="#fbbf24"/>
+                </g>
+              </svg>
+            </div>
+
+            <div class="z-10 border-t border-white/15 pt-3 flex items-end justify-between gap-2">
+              <div>
+                <p class="text-[11px] uppercase tracking-wider text-slate-300">Penulis</p>
+                <p class="text-sm sm:text-base font-bold text-white">Andika Setia Pratama</p>
+              </div>
+              <div class="text-right">
+                <p class="text-xs font-extrabold tracking-wide text-amber-300">KAIえEN</p>
+                <p class="text-[11px] text-teal-200">Sarana Edukasi • 2024</p>
+              </div>
+            </div>
+          </div>
+        `
+      },
+
+      // ==================== HALAMAN 2: JUDUL & HAK CIPTA ====================
+      {
+        num: 2,
+        section: "Halaman Judul & Hak Cipta",
+        html: `
+          <div class="h-full flex flex-col justify-between book-body">
+            <div class="text-center border-b pb-4 border-slate-300 dark:border-slate-700">
+              <p class="text-xs uppercase tracking-widest text-teal-600 dark:text-teal-400 font-sansUi font-bold mb-1">Halaman Judul & Penerbitan</p>
+              <h2 class="text-xl sm:text-2xl font-bold leading-snug">Petualangan Seru dalam Sains:</h2>
+              <p class="text-sm italic text-slate-600 dark:text-slate-300 mt-1">Eksperimen Menyenangkan dan Praktis untuk Semua Kalangan</p>
+            </div>
+
+            <div class="my-auto py-3 space-y-2.5 text-xs sm:text-sm font-sansUi">
+              <div class="sci-box space-y-1.5">
+                <p class="!mb-1"><strong class="text-teal-700 dark:text-teal-300">Penulis:</strong> Andika Setia Pratama</p>
+                <p class="!mb-1"><strong class="text-teal-700 dark:text-teal-300">Editor:</strong> Tim Kaizen</p>
+                <p class="!mb-1"><strong class="text-teal-700 dark:text-teal-300">Desain & Tata Letak:</strong> Anisah Fatayati</p>
+                <p class="!mb-1"><strong class="text-teal-700 dark:text-teal-300">Penerbit:</strong> Kaizen Sarana Edukasi</p>
+                <p class="!mb-0"><strong class="text-teal-700 dark:text-teal-300">Alamat Penerbit:</strong> Bantul, Daerah Istimewa Yogyakarta</p>
+                <p class="!mb-0"><strong class="text-teal-700 dark:text-teal-300">Tahun Terbit:</strong> Cetakan Pertama, 2024</p>
+              </div>
+
+              <div class="p-3 rounded-xl border border-amber-500/30 bg-amber-500/10 text-[11px] sm:text-xs leading-relaxed">
+                <p class="font-bold text-amber-800 dark:text-amber-300 mb-1">⚖️ Hak Cipta Dilindungi Undang-Undang</p>
+                <p class="!mb-0 text-justify">
+                  Dilarang memperbanyak, memfotokopi, atau menyebarluaskan sebagian maupun seluruh isi buku ini dalam bentuk apa pun tanpa izin tertulis dari Penulis dan Penerbit Kaizen Sarana Edukasi, kecuali untuk kutipan singkat dalam kajian ilmiah atau keperluan pembelajaran di kelas.
+                </p>
+              </div>
+            </div>
+
+            <div class="text-center text-[11px] font-sansUi text-slate-500">
+              Edisi Digital Interaktif • Kaizen Sarana Edukasi (2024)
+            </div>
+          </div>
+        `
+      },
+
+      // ==================== HALAMAN 3: DAFTAR ISI INTERAKTIF ====================
+      {
+        num: 3,
+        section: "Daftar Isi",
+        html: `
+          <div class="h-full flex flex-col">
+            <div class="border-b border-slate-300 dark:border-slate-700 pb-2 mb-3 flex items-center justify-between">
+              <h2 class="text-lg sm:text-xl font-bold text-teal-700 dark:text-teal-300">📑 Daftar Isi Interaktif</h2>
+              <span class="text-[11px] font-sansUi text-slate-500">Klik bab untuk melompat</span>
+            </div>
+            <div class="flex-1 overflow-y-auto page-scroll pr-1 space-y-1.5 font-sansUi text-xs">
+              ${tocItems.slice(3).map(item => `
+                <button type="button" onclick="goToPage(${item.page})"
+                  class="w-full flex items-center justify-between p-2 rounded-lg hover:bg-teal-600/15 border border-transparent hover:border-teal-500/30 transition text-left group">
+                  <span class="font-medium group-hover:text-teal-700 dark:group-hover:text-teal-300 transition">${item.title}</span>
+                  <span class="px-2 py-0.5 rounded bg-slate-200 dark:bg-slate-800 text-[11px] font-bold text-slate-700 dark:text-slate-300 shrink-0 ml-2">Hal. ${item.page}</span>
+                </button>
+              `).join('')}
+            </div>
+          </div>
+        `
+      },
+
+      // ==================== HALAMAN 4: KATA PENGANTAR ====================
+      {
+        num: 4,
+        section: "Kata Pengantar",
+        html: `
+          <div class="book-body space-y-2.5">
+            <h2 class="text-lg sm:text-xl font-bold text-teal-700 dark:text-teal-300 border-b border-slate-300 dark:border-slate-700 pb-2">
+              ✨ Kata Pengantar
+            </h2>
+            <p>
+              Puji syukur ke hadirat Tuhan Yang Maha Esa atas limpahan rahmat dan karunia-Nya sehingga buku <strong>"Petualangan Seru dalam Sains: Eksperimen Menyenangkan dan Praktis untuk Semua Kalangan"</strong> dapat hadir di hadapan pembaca.
+            </p>
+            <p>
+              Sains sering kali dianggap sebagai kumpulan rumus rumit yang hanya hidup di dalam buku teks. Padahal, sains hadir di setiap napas yang kita hirup, di dapur tempat kita memasak, di taman sekolah, hingga di langit malam yang bertabur bintang.
+            </p>
+            <p>
+              Buku ini disusun secara sistematis mulai dari pengenalan dasar Ilmu Pengetahuan Alam (IPA), pengenalan alat laboratorium, eksperimen air, listrik statis, kimia dapur, fisika gerak dan optik, biologi tumbuhan, ekologi lingkungan, hingga panduan merancang <strong>Projek Akhir Sains</strong>. Setiap percobaan dirancang menggunakan bahan yang aman, mudah ditemukan di rumah, namun tetap berpijak pada metode ilmiah yang akurat.
+            </p>
+            <p>
+              Selamat bereksperimen, bertanya, mengamati, dan menemukan keajaiban ilmu pengetahuan!
+            </p>
+            <div class="pt-2 text-right font-sansUi text-xs">
+              <p class="!mb-0 text-slate-500">Yogyakarta, 2024</p>
+              <p class="!mb-0 font-bold text-teal-700 dark:text-teal-300">Andika Setia Pratama</p>
+            </div>
+          </div>
+        `
+      },
+
+      // ==================== HALAMAN 5: BAB 1 (A & B) ====================
+      {
+        num: 5,
+        section: "BAB 1: Pengenalan Ilmu Pengetahuan Alam",
+        html: `
+          <div class="book-body">
+            <span class="inline-block px-2.5 py-0.5 rounded bg-teal-600 text-white font-sansUi text-[11px] font-bold mb-1">BAB 1</span>
+            <h2 class="text-lg sm:text-xl font-bold text-teal-700 dark:text-teal-300 mb-2">Pengenalan Ilmu Pengetahuan Alam</h2>
+            
+            <h3 class="font-bold text-sm sm:text-base text-amber-700 dark:text-amber-300 mt-2 mb-1">A. Apa itu IPA?</h3>
+            <p>
+              <strong>Ilmu Pengetahuan Alam (IPA)</strong> adalah cabang ilmu yang mempelajari fenomena alam semesta secara sistematis melalui pengamatan (observasi), perumusan hipotesis, eksperimen terkontrol, dan penarikan kesimpulan berbasis bukti empiris.
+            </p>
+
+            <h3 class="font-bold text-sm sm:text-base text-amber-700 dark:text-amber-300 mt-2 mb-1.5">B. Cabang-Cabang Utama IPA</h3>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 font-sansUi text-xs">
+              <div class="sci-box !mb-0">
+                <p class="font-bold text-teal-700 dark:text-teal-300 !mb-0.5">⚛️ 1. Fisika</p>
+                <p class="!mb-0 !text-left text-[11px]">Mempelajari materi, energi, gerak, gaya, cahaya, bunyi, listrik, dan hukum dasar alam semesta.</p>
+              </div>
+              <div class="sci-box !mb-0">
+                <p class="font-bold text-amber-700 dark:text-amber-300 !mb-0.5">🧪 2. Kimia</p>
+                <p class="!mb-0 !text-left text-[11px]">Mempelajari komposisi, struktur, sifat zat, serta reaksi perubahan suatu materi menjadi materi baru.</p>
+              </div>
+              <div class="sci-box !mb-0">
+                <p class="font-bold text-emerald-700 dark:text-emerald-300 !mb-0.5">🧬 3. Biologi</p>
+                <p class="!mb-0 !text-left text-[11px]">Mempelajari makhluk hidup, mulai dari sel mikroskopis, tumbuhan, hewan, manusia, hingga ekosistem.</p>
+              </div>
+              <div class="sci-box !mb-0">
+                <p class="font-bold text-indigo-700 dark:text-indigo-300 !mb-0.5">🌋 4. Geologi</p>
+                <p class="!mb-0 !text-left text-[11px]">Mempelajari struktur Bumi, batuan, mineral, lempeng tektonik, gunung berapi, dan sejarah kebumian.</p>
+              </div>
+            </div>
+          </div>
+        `
+      },
+
+      // ==================== HALAMAN 6: BAB 1 (C, D & E) ====================
+      {
+        num: 6,
+        section: "BAB 1: Pengenalan Ilmu Pengetahuan Alam",
+        html: `
+          <div class="book-body">
+            <h3 class="font-bold text-sm sm:text-base text-amber-700 dark:text-amber-300 mb-1">C. Mengapa IPA Penting?</h3>
+            <ul class="list-disc pl-5 text-xs sm:text-sm space-y-1 mb-2.5 font-sansUi">
+              <li><strong>Memahami Lingkungan:</strong> Menjelaskan gejala alam seperti hujan, pelangi, dan siklus ekosistem.</li>
+              <li><strong>Pengambilan Keputusan:</strong> Membantu memilih gaya hidup sehat dan hemat energi berbasis fakta.</li>
+              <li><strong>Teknologi & Inovasi:</strong> Menjadi fondasi lahirnya internet, energi terbarukan, dan transportasi modern.</li>
+              <li><strong>Kesehatan:</strong> Mendukung penemuan vaksin, obat-obatan, dan pemahaman nutrisi tubuh.</li>
+              <li><strong>Melindungi Lingkungan:</strong> Mengatasi pencemaran air, tanah, dan perubahan iklim global.</li>
+              <li><strong>Berpikir Kritis:</strong> Melatih logika agar tidak mudah percaya hoaks tanpa bukti ilmiah.</li>
+            </ul>
+
+            <h3 class="font-bold text-sm sm:text-base text-amber-700 dark:text-amber-300 mb-1">D. Bagaimana IPA Diajarkan?</h3>
+            <p class="text-xs sm:text-sm">
+              IPA paling efektif dipelajari melalui pendekatan <em>hands-on</em> (praktik langsung) dan inkuiri ilmiah: siswa diajak bertanya, mencoba eksperimen nyata, mencatat data, lalu mendiskusikannya.
+            </p>
+
+            <h3 class="font-bold text-sm sm:text-base text-amber-700 dark:text-amber-300 mb-1">E. Sejarah Singkat IPA</h3>
+            <div class="sci-box text-xs font-sansUi space-y-1 !mb-0">
+              <p class="!mb-0.5"><strong>🏛️ Zaman Kuno:</strong> Peradaban Mesir, Yunani (Aristoteles, Archimedes), dan Ilmuwan Muslim (Ibnu al-Haytham) merintis pengamatan astronomi, optik, dan matematika.</p>
+              <p class="!mb-0.5"><strong>🔭 Renaissance (Abad 15–17):</strong> Galileo Galilei dan Isaac Newton melahirkan metode eksperimental modern dan hukum gravitasi.</p>
+              <p class="!mb-0.5"><strong>⚡ Abad ke-19:</strong> Penemuan elektromagnetisme (Faraday), tabel periodik (Mendeleev), dan teori evolusi (Darwin).</p>
+              <p class="!mb-0"><strong>🚀 Abad ke-20 & 21:</strong> Fisika kuantum, relativitas Einstein, struktur DNA, rekayasa genetika, hingga eksplorasi antariksa.</p>
+            </div>
+          </div>
+        `
+      },
+
+      // ==================== HALAMAN 7: RANGKUMAN & LATIHAN BAB 1 ====================
+      {
+        num: 7,
+        section: "BAB 1: Pengenalan Ilmu Pengetahuan Alam",
+        html: `
+          <div class="book-body">
+            <div class="sci-box border-l-4 border-l-teal-600">
+              <h3 class="font-sansUi font-bold text-xs uppercase tracking-wider text-teal-700 dark:text-teal-300 mb-1">📌 Rangkuman Bab 1</h3>
+              <ul class="list-disc pl-4 text-xs font-sansUi space-y-1">
+                <li>IPA mempelajari alam secara sistematis melalui observasi dan eksperimen.</li>
+                <li>Empat cabang utama IPA meliputi Fisika, Kimia, Biologi, dan Geologi.</li>
+                <li>Penguasaan IPA melatih keterampilan berpikir kritis, literasi sains, dan kepedulian terhadap kelestarian lingkungan.</li>
+              </ul>
+            </div>
+
+            ${renderQuizCard(
+              'bab1',
+              'Jelaskan perbedaan utama antara kajian ilmu Fisika dan Kimia dalam kehidupan sehari-hari!',
+              'Ingatlah apakah zat tersebut berubah menjadi zat baru atau hanya mengalami perubahan bentuk/gerak/energi.',
+              'Fisika mempelajari energi, gaya, gerak, dan sifat fisik tanpa mengubah identitas zat (misalnya air mendidih menjadi uap), sedangkan Kimia mempelajari komposisi zat dan reaksi yang menghasilkan zat baru (misalnya besi berkarat atau kayu terbakar menjadi abu).'
+            )}
+          </div>
+        `
+      },
+
+      // ==================== HALAMAN 8: BAB 2 (15 ALAT LAB BAGIAN 1) ====================
+      {
+        num: 8,
+        section: "BAB 2: Alat dan Bahan Eksperimen",
+        html: `
+          <div class="book-body">
+            <span class="inline-block px-2.5 py-0.5 rounded bg-teal-600 text-white font-sansUi text-[11px] font-bold mb-1">BAB 2</span>
+            <h2 class="text-lg sm:text-xl font-bold text-teal-700 dark:text-teal-300 mb-1.5">Alat dan Bahan Eksperimen</h2>
+            <h3 class="font-bold text-sm text-amber-700 dark:text-amber-300 mb-2">A. 15 Alat-Alat Dasar Laboratorium (1–8)</h3>
+
+            <div class="grid grid-cols-2 gap-2 font-sansUi text-[11px]">
+              <div class="sci-box !p-2 !mb-0 flex gap-2 items-start">
+                <span class="text-lg">🔬</span>
+                <div><strong>1. Mikroskop:</strong> Memperbesar bayangan objek mikroskopis (sel/bakteri).</div>
+              </div>
+              <div class="sci-box !p-2 !mb-0 flex gap-2 items-start">
+                <span class="text-lg">⚗️</span>
+                <div><strong>2. Labu Erlenmeyer:</strong> Wadah mencampur dan menitrasi larutan agar tidak tumpah.</div>
+              </div>
+              <div class="sci-box !p-2 !mb-0 flex gap-2 items-start">
+                <span class="text-lg">🥛</span>
+                <div><strong>3. Gelas Beker:</strong> Menampung, mengaduk, dan memanaskan cairan.</div>
+              </div>
+              <div class="sci-box !p-2 !mb-0 flex gap-2 items-start">
+                <span class="text-lg">📏</span>
+                <div><strong>4. Gelas Ukur:</strong> Mengukur volume cairan dengan skala akurat (mL).</div>
+              </div>
+              <div class="sci-box !p-2 !mb-0 flex gap-2 items-start">
+                <span class="text-lg">⚖️</span>
+                <div><strong>5. Neraca Analitik:</strong> Menimbang massa zat dengan ketelitian sangat tinggi (0,0001 g).</div>
+              </div>
+              <div class="sci-box !p-2 !mb-0 flex gap-2 items-start">
+                <span class="text-lg">🥢</span>
+                <div><strong>6. Pinset:</strong> Mengambil benda kecil atau preparat secara higienis.</div>
+              </div>
+              <div class="sci-box !p-2 !mb-0 flex gap-2 items-start">
+                <span class="text-lg">🌡️</span>
+                <div><strong>7. Termometer:</strong> Mengukur suhu zat atau lingkungan dalam °C.</div>
+              </div>
+              <div class="sci-box !p-2 !mb-0 flex gap-2 items-start">
+                <span class="text-lg">🧪</span>
+                <div><strong>8. Tabung Reaksi:</strong> Mereaksikan larutan dalam volume kecil.</div>
+              </div>
+            </div>
+          </div>
+        `
+      },
+
+      // ==================== HALAMAN 9: BAB 2 (15 ALAT LAB BAGIAN 2 + DIAGRAM SVG) ====================
+      {
+        num: 9,
+        section: "BAB 2: Alat dan Bahan Eksperimen",
+        html: `
+          <div class="book-body">
+            <h3 class="font-bold text-sm text-amber-700 dark:text-amber-300 mb-2">A. 15 Alat-Alat Dasar Laboratorium (9–15)</h3>
+            <div class="grid grid-cols-2 gap-2 font-sansUi text-[11px] mb-2">
+              <div class="sci-box !p-2 !mb-0 flex gap-2 items-start">
+                <span class="text-lg">🪜</span>
+                <div><strong>9. Kaki Tiga:</strong> Penyangga wadah saat proses pemanasan di atas pembakar.</div>
+              </div>
+              <div class="sci-box !p-2 !mb-0 flex gap-2 items-start">
+                <span class="text-lg">🔥</span>
+                <div><strong>10. Pembakar Spiritus:</strong> Sumber nyala api pemanas berbahan bakar alkohol.</div>
+              </div>
+              <div class="sci-box !p-2 !mb-0 flex gap-2 items-start">
+                <span class="text-lg">🗜️</span>
+                <div><strong>11. Penjepit Tabung:</strong> Memegang tabung reaksi saat dipanaskan agar tangan aman.</div>
+              </div>
+              <div class="sci-box !p-2 !mb-0 flex gap-2 items-start">
+                <span class="text-lg">📟</span>
+                <div><strong>12. Neraca Digital:</strong> Timbangan elektronik praktis untuk menimbang bahan padat.</div>
+              </div>
+              <div class="sci-box !p-2 !mb-0 flex gap-2 items-start">
+                <span class="text-lg">💧</span>
+                <div><strong>13. Pipet Tetes & Ukur:</strong> Memindahkan cairan tetes demi tetes atau volume terukur.</div>
+              </div>
+              <div class="sci-box !p-2 !mb-0 flex gap-2 items-start">
+                <span class="text-lg">🏺</span>
+                <div><strong>14. Desikator:</strong> Wadah kedap udara berisi silika gel untuk mengeringkan sampel.</div>
+              </div>
+              <div class="sci-box !p-2 !mb-0 col-span-2 flex gap-2 items-start">
+                <span class="text-lg">🥣</span>
+                <div><strong>15. Mortar dan Alu:</strong> Menghaluskan atau menggerus bahan padat menjadi serbuk halus.</div>
+              </div>
+            </div>
+
+            <!-- Ilustrasi SVG Alat Lab -->
+            <div class="sci-box !py-2 flex items-center justify-around">
+              <svg class="w-full h-16" viewBox="0 0 360 70" fill="none">
+                <!-- Erlenmeyer -->
+                <path d="M35 12 H50 V24 L62 56 H23 L35 24 Z" stroke="#0f766e" stroke-width="2.5" fill="#ccfbf1"/>
+                <text x="42" y="67" font-size="8" text-anchor="middle" fill="currentColor">Erlenmeyer</text>
+                <!-- Gelas Ukur -->
+                <rect x="105" y="10" width="16" height="46" rx="2" stroke="#0284c7" stroke-width="2.5" fill="#e0f2fe"/>
+                <line x1="105" y1="22" x2="112" y2="22" stroke="#0284c7" stroke-width="1.5"/>
+                <line x1="105" y1="34" x2="112" y2="34" stroke="#0284c7" stroke-width="1.5"/>
+                <line x1="105" y1="46" x2="112" y2="46" stroke="#0284c7" stroke-width="1.5"/>
+                <text x="113" y="67" font-size="8" text-anchor="middle" fill="currentColor">Gelas Ukur</text>
+                <!-- Tabung Reaksi -->
+                <path d="M175 12 H189 V46 A7 7 0 0 1 175 46 Z" stroke="#d97706" stroke-width="2.5" fill="#fef3c7"/>
+                <text x="182" y="67" font-size="8" text-anchor="middle" fill="currentColor">Tabung Reaksi</text>
+                <!-- Pembakar Spiritus -->
+                <path d="M242 32 H268 L273 56 H237 Z" stroke="#e11d48" stroke-width="2.5" fill="#ffe4e6"/>
+                <path d="M255 15 Q261 24 255 30 Q249 24 255 15 Z" fill="#f59e0b"/>
+                <text x="255" y="67" font-size="8" text-anchor="middle" fill="currentColor">Spiritus</text>
+                <!-- Mortar -->
+                <path d="M310 34 H344 C344 50 310 50 310 34 Z" stroke="#4f46e5" stroke-width="2.5" fill="#e0e7ff"/>
+                <line x1="336" y1="16" x2="324" y2="38" stroke="#4f46e5" stroke-width="3" stroke-linecap="round"/>
+                <text x="327" y="67" font-size="8" text-anchor="middle" fill="currentColor">Mortar</text>
+              </svg>
+            </div>
+          </div>
+        `
+      },
+
+      // ==================== HALAMAN 10: BAB 2 (BAHAN AMAN DI RUMAH) ====================
+      {
+        num: 10,
+        section: "BAB 2: Alat dan Bahan Eksperimen",
+        html: `
+          <div class="book-body">
+            <h3 class="font-bold text-sm sm:text-base text-amber-700 dark:text-amber-300 mb-1.5">B. Bahan-Bahan Aman di Rumah</h3>
+            <p class="text-xs sm:text-sm">
+              Laboratorium terbaik sering kali berada di dapur kita sendiri! Berikut bahan-bahan rumah tangga yang aman untuk eksperimen:
+            </p>
+            <div class="space-y-1.5 font-sansUi text-xs">
+              <div class="sci-box !p-2 !mb-0">
+                <strong>🍋 1. Air Jeruk:</strong> Mengandung <em>asam sitrat</em> alami, berguna untuk uji keasaman dan baterai buah.
+              </div>
+              <div class="sci-box !p-2 !mb-0">
+                <strong>🍶 2. Cuka Makanan:</strong> Mengandung <em>asam asetat</em> (CH₃COOH), bereaksi cepat dengan basa menghasilkan gas CO₂.
+              </div>
+              <div class="sci-box !p-2 !mb-0">
+                <strong>🧼 3. Air Sabun:</strong> Agen surfaktan yang menurunkan tegangan permukaan air serta membentuk busa.
+              </div>
+              <div class="sci-box !p-2 !mb-0">
+                <strong>🌿 4. Bahan Alami (Kunyit & Garam):</strong> Ekstrak kunyit adalah indikator pH alami (berubah merah kecokelatan pada basa), sedangkan garam dapur (NaCl) untuk uji densitas & kristalisasi.
+              </div>
+              <div class="sci-box !p-2 !mb-0">
+                <strong>🧁 5. Baking Soda:</strong> Natrium bikarbonat (NaHCO₃), senyawa basa lemah pengembang adonan dan bahan gunung berapi mini.
+              </div>
+              <div class="sci-box !p-2 !mb-0">
+                <strong>🍞 6. Ragi & 7. Amonium Karbonat:</strong> Ragi mengandung mikroorganisme <em>Saccharomyces cerevisiae</em> untuk fermentasi, sedangkan amonium karbonat menghasilkan gas saat dipanaskan.
+              </div>
+            </div>
+          </div>
+        `
+      },
+
+      // ==================== HALAMAN 11: BAB 2 (TIPS KEAMANAN & LATIHAN) ====================
+      {
+        num: 11,
+        section: "BAB 2: Alat dan Bahan Eksperimen",
+        html: `
+          <div class="book-body">
+            <h3 class="font-bold text-sm sm:text-base text-rose-600 dark:text-rose-400 mb-1.5">C. 7 Tips Keamanan Melakukan Eksperimen</h3>
+            <ol class="list-decimal pl-5 font-sansUi text-xs space-y-1 mb-2.5">
+              <li>Gunakan <strong>Alat Pelindung Diri (APD)</strong> seperti kacamata pelindung, sarung tangan, dan celemek/jas lab.</li>
+              <li>Baca seluruh instruksi eksperimen dengan teliti sebelum memulai.</li>
+              <li>Jangan pernah mencicipi, meminum, atau menghirup uap bahan kimia secara langsung.</li>
+              <li>Pastikan ruangan memiliki ventilasi udara yang baik dan jauh dari bahan mudah terbakar.</li>
+              <li>Ikat rambut yang panjang dan hindari pakaian longgar saat bekerja di dekat api spiritus.</li>
+              <li>Minta pendampingan orang dewasa atau guru saat menggunakan benda tajam atau sumber panas.</li>
+              <li>Bersihkan meja kerja, buang limbah sesuai aturan, dan cuci tangan dengan sabun setelah selesai.</li>
+            </ol>
+
+            ${renderQuizCard(
+              'bab2',
+              'Mengapa kunyit dapat digunakan sebagai indikator asam-basa alami di rumah?',
+              'Perhatikan perubahan warna senyawa kurkumin pada kunyit saat bertemu larutan basa seperti air sabun.',
+              'Kunyit mengandung pigmen kurkumin yang tetap berwarna kuning cerah dalam larutan asam atau netral, tetapi berubah menjadi merah kecokelatan saat bereaksi dengan larutan basa (seperti air sabun atau larutan baking soda).'
+            )}
+          </div>
+        `
+      },
+
+      // ==================== HALAMAN 12: BAB 3 (KAPILARITAS BUNGA) ====================
+      {
+        num: 12,
+        section: "BAB 3: Eksperimen Sederhana dengan Air",
+        html: `
+          <div class="book-body">
+            <span class="inline-block px-2.5 py-0.5 rounded bg-sky-600 text-white font-sansUi text-[11px] font-bold mb-1">BAB 3</span>
+            <h2 class="text-lg sm:text-xl font-bold text-sky-700 dark:text-sky-300 mb-1.5">Eksperimen Sederhana dengan Air</h2>
+            <h3 class="font-bold text-sm text-amber-700 dark:text-amber-300 mb-1.5">A. Eksperimen Kapilaritas: Perubahan Warna Bunga</h3>
+
+            <div class="sci-box text-xs font-sansUi">
+              <p class="font-bold text-sky-700 dark:text-sky-300 mb-1">🧰 Alat & Bahan:</p>
+              <p class="!mb-0">Bunga mawar putih atau sawi putih segar, 3 gelas bening, air bersih, pewarna makanan (merah, biru, hijau), dan gunting/pisau.</p>
+            </div>
+
+            <div class="sci-box text-xs font-sansUi">
+              <p class="font-bold text-teal-700 dark:text-teal-300 mb-1">📋 Langkah Eksperimen:</p>
+              <ol class="list-decimal pl-4 space-y-1">
+                <li>Isi masing-masing gelas dengan air setinggi setengah gelas, lalu teteskan pewarna makanan berbeda ke tiap gelas.</li>
+                <li>Potong miring ujung tangkai bunga putih agar daya serap maksimal.</li>
+                <li>Masukkan tangkai bunga ke dalam gelas berwarna dan diamkan selama 6–24 jam.</li>
+                <li>Amati perubahan warna yang muncul pada kelopak bunga putih.</li>
+              </ol>
+            </div>
+
+            <div class="sci-box text-xs font-sansUi border-l-4 border-l-sky-500 !mb-0">
+              <p class="font-bold text-sky-700 dark:text-sky-300 mb-0.5">🔬 Penjelasan Ilmiah (Kapilaritas & Xilem):</p>
+              <p class="!mb-0">Air berwarna naik melawan gravitasi melalui pembuluh kayu (<strong>xilem</strong>) pada batang tumbuhan karena gaya adhesi antara molekul air dan dinding pembuluh serta kohesi antarmolekul air (gejala <em>kapilaritas</em>), dibantu oleh penguapan air di daun/kelopak (transpirasi).</p>
+            </div>
+          </div>
+        `
+      },
+
+      // ==================== HALAMAN 13: BAB 3 (MENGAPUNG & TENGGELAM) ====================
+      {
+        num: 13,
+        section: "BAB 3: Eksperimen Sederhana dengan Air",
+        html: `
+          <div class="book-body">
+            <h3 class="font-bold text-sm sm:text-base text-amber-700 dark:text-amber-300 mb-1.5">B. Mengapung dan Tenggelam: Mempelajari Kepadatan</h3>
+            <p class="text-xs sm:text-sm">
+              Mengapa kapal baja raksasa bisa mengapung sedangkan kerikil kecil tenggelam? Kuncinya adalah <strong>kepadatan (massa jenis, ρ = m/V)</strong> dan <strong>Gaya Apung Archimedes</strong>.
+            </p>
+
+            <div class="sci-box text-xs font-sansUi">
+              <p class="font-bold text-teal-700 dark:text-teal-300 mb-1">🥚 Percobaan Telur Melayang di Air Garam:</p>
+              <ol class="list-decimal pl-4 space-y-1">
+                <li>Siapkan 3 gelas berisi air: Gelas A (air tawar), Gelas B (air + 4 sdm garam), Gelas C (setengah air garam + setengah air tawar dituang perlahan).</li>
+                <li>Masukkan telur mentah ke tiap gelas: pada Gelas A telur <strong>tenggelam</strong> (ρ telur > ρ air tawar), pada Gelas B telur <strong>mengapung</strong> (ρ air garam > ρ telur), dan pada Gelas C telur <strong>melayang</strong> di tengah!</li>
+              </ol>
+            </div>
+
+            <!-- Diagram SVG Telur -->
+            <div class="sci-box !py-2 flex justify-center">
+              <svg class="w-full max-w-xs h-24" viewBox="0 0 300 95" fill="none">
+                <!-- Gelas 1: Tenggelam -->
+                <rect x="25" y="15" width="55" height="68" rx="4" stroke="#0284c7" stroke-width="2" fill="#e0f2fe"/>
+                <ellipse cx="52" cy="72" rx="11" ry="8" fill="#fbbf24" stroke="#b45309" stroke-width="1.5"/>
+                <text x="52" y="92" font-size="9" text-anchor="middle" fill="currentColor">Tenggelam</text>
+                <!-- Gelas 2: Melayang -->
+                <rect x="122" y="15" width="55" height="68" rx="4" stroke="#0284c7" stroke-width="2" fill="#bae6fd"/>
+                <ellipse cx="149" cy="48" rx="11" ry="8" fill="#fbbf24" stroke="#b45309" stroke-width="1.5"/>
+                <text x="149" y="92" font-size="9" text-anchor="middle" fill="currentColor">Melayang</text>
+                <!-- Gelas 3: Mengapung -->
+                <rect x="220" y="15" width="55" height="68" rx="4" stroke="#0284c7" stroke-width="2" fill="#7dd3fc"/>
+                <ellipse cx="247" cy="20" rx="11" ry="8" fill="#fbbf24" stroke="#b45309" stroke-width="1.5"/>
+                <text x="247" y="92" font-size="9" text-anchor="middle" fill="currentColor">Mengapung</text>
+              </svg>
+            </div>
+          </div>
+        `
+      },
+
+      // ==================== HALAMAN 14: BAB 3 (PENJERNIHAN AIR & LATIHAN) ====================
+      {
+        num: 14,
+        section: "BAB 3: Eksperimen Sederhana dengan Air",
+        html: `
+          <div class="book-body">
+            <h3 class="font-bold text-sm text-amber-700 dark:text-amber-300 mb-1">C. Penjernihan Air: Penggunaan Filter Alami</h3>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 items-center mb-2">
+              <div class="font-sansUi text-xs space-y-1">
+                <p class="!mb-1">Susun lapisan filter dari atas ke bawah dalam botol bekas terbalik:</p>
+                <ol class="list-decimal pl-4 space-y-0.5 text-[11px]">
+                  <li><strong>Kerikil:</strong> Menyaring kotoran kasar/daun.</li>
+                  <li><strong>Sabut Kelapa:</strong> Menahan partikel lumpur sedang.</li>
+                  <li><strong>Arang Aktif:</strong> Menyerap bau, warna, dan zat kimia berbahaya (adsorpsi).</li>
+                  <li><strong>Pasir Halus:</strong> Menyaring endapan halus.</li>
+                  <li><strong>Kain Kasa / Ijuk / Spons:</strong> Penahan akhir agar air keluar jernih.</li>
+                </ol>
+              </div>
+              <!-- Diagram Botol Filter SVG -->
+              <div class="flex justify-center">
+                <svg class="w-32 h-36" viewBox="0 0 120 145" fill="none">
+                  <path d="M25 10 H95 V85 L70 115 V130 H50 V115 L25 85 Z" stroke="#0f766e" stroke-width="2.5" fill="#f0fdfa"/>
+                  <rect x="27" y="18" width="66" height="14" fill="#94a3b8"/>
+                  <text x="60" y="28" font-size="7" text-anchor="middle" fill="#fff" font-weight="bold">Kerikil</text>
+                  <rect x="27" y="32" width="66" height="14" fill="#b45309"/>
+                  <text x="60" y="42" font-size="7" text-anchor="middle" fill="#fff" font-weight="bold">Sabut Kelapa</text>
+                  <rect x="27" y="46" width="66" height="15" fill="#1e293b"/>
+                  <text x="60" y="56" font-size="7" text-anchor="middle" fill="#fff" font-weight="bold">Arang Aktif</text>
+                  <rect x="27" y="61" width="66" height="14" fill="#fcd34d"/>
+                  <text x="60" y="71" font-size="7" text-anchor="middle" fill="#1e293b" font-weight="bold">Pasir Halus</text>
+                  <polygon points="27,75 93,75 72,102 48,102" fill="#e2e8f0"/>
+                  <text x="60" y="90" font-size="6.5" text-anchor="middle" fill="#1e293b" font-weight="bold">Kasa/Spons</text>
+                  <circle cx="60" cy="138" r="3" fill="#0ea5e9"/>
+                </svg>
+              </div>
+            </div>
+
+            ${renderQuizCard(
+              'bab3',
+              'Apa fungsi utama lapisan arang aktif dalam filter penjernihan air sederhana?',
+              'Pikirkan tentang bau dan warna keruh pada air kotor.',
+              'Arang aktif memiliki pori-pori mikro yang sangat luas sehingga mampu menyerap (mengadsorpsi) bau tidak sedap, zat pewarna, klorin, dan polutan kimia terlarut dalam air.'
+            )}
+          </div>
+        `
+      },
+
+      // ==================== HALAMAN 15: BAB 4 (BALON STATIS) ====================
+      {
+        num: 15,
+        section: "BAB 4: Balon Statis & Listrik Statis",
+        html: `
+          <div class="book-body">
+            <span class="inline-block px-2.5 py-0.5 rounded bg-amber-600 text-white font-sansUi text-[11px] font-bold mb-1">BAB 4</span>
+            <h2 class="text-lg sm:text-xl font-bold text-amber-700 dark:text-amber-300 mb-1.5">Balon Statis: Listrik Statis yang Menarik</h2>
+            <h3 class="font-bold text-sm text-teal-700 dark:text-teal-300 mb-1.5">A. Eksperimen Balon Statis</h3>
+
+            <div class="sci-box text-xs font-sansUi">
+              <p class="font-bold mb-1">🧰 Alat & Bahan:</p>
+              <p class="!mb-0">1 buah balon karet yang sudah ditiup, kain wol (atau rambut kering), dan potongan-potongan kertas kecil.</p>
+            </div>
+
+            <div class="sci-box text-xs font-sansUi">
+              <p class="font-bold mb-1">📋 Langkah Eksperimen:</p>
+              <ol class="list-decimal pl-4 space-y-1">
+                <li>Sebarkan potongan kertas kecil di atas meja yang kering.</li>
+                <li>Gosokkan permukaan balon ke kain wol atau rambut kering secara searah selama 15–20 detik.</li>
+                <li>Dekatkan bagian balon yang telah digosok ke arah potongan kertas (tanpa menyentuhnya).</li>
+                <li>Amati potongan kertas yang melompat dan menempel pada permukaan balon!</li>
+              </ol>
+            </div>
+
+            <div class="sci-box text-xs font-sansUi border-l-4 border-l-amber-500 !mb-0">
+              <p class="font-bold text-amber-700 dark:text-amber-300 mb-0.5">⚡ Penjelasan Ilmiah (Transfer Elektron):</p>
+              <p class="!mb-0">Saat balon digosok dengan kain wol, elektron (muatan negatif) berpindah dari kain wol ke balon sehingga balon bermuatan negatif. Ketika didekatkan ke kertas netral, terjadi induksi muatan positif di permukaan kertas sehingga timbul gaya tarik elektrostatik (Hukum Coulomb).</p>
+            </div>
+          </div>
+        `
+      },
+
+      // ==================== HALAMAN 16: BAB 4 (ROKET BALON) ====================
+      {
+        num: 16,
+        section: "BAB 4: Balon Statis & Listrik Statis",
+        html: `
+          <div class="book-body">
+            <h3 class="font-bold text-sm sm:text-base text-teal-700 dark:text-teal-300 mb-1.5">B. Roket Balon (Hukum Ketiga Newton)</h3>
+            <p class="text-xs sm:text-sm">
+              Bagaimana roket luar angkasa meluncur ke orbit? Prinsip yang sama dapat kita uji menggunakan balon dan seutas benang!
+            </p>
+
+            <div class="sci-box text-xs font-sansUi">
+              <p class="font-bold mb-1">🧰 Alat & Bahan:</p>
+              <p class="!mb-0">Balon lonjong, benang kasur/nilon sepanjang 3–4 meter, sedotan plastik lurus, selotip, dan penjepit jemuran.</p>
+            </div>
+
+            <div class="sci-box text-xs font-sansUi">
+              <p class="font-bold mb-1">📋 Langkah & Prinsip Kerja:</p>
+              <ol class="list-decimal pl-4 space-y-1">
+                <li>Masukkan benang melalui lubang sedotan, lalu ikat kedua ujung benang secara kencang di antara dua kursi.</li>
+                <li>Tiup balon hingga penuh, jepit mulutnya dengan penjepit, lalu tempelkan badan balon pada sedotan dengan selotip.</li>
+                <li>Lepaskan penjepit! Udara menyembur ke belakang (<strong>Gaya Aksi</strong>) dan mendorong balon melesat kencang ke depan (<strong>Gaya Reaksi</strong>).</li>
+              </ol>
+            </div>
+
+            <!-- Diagram SVG Roket Balon -->
+            <div class="sci-box !py-2 flex justify-center">
+              <svg class="w-full max-w-sm h-20" viewBox="0 0 320 75" fill="none">
+                <line x1="10" y1="20" x2="310" y2="20" stroke="#64748b" stroke-width="2" stroke-dasharray="4 3"/>
+                <rect x="115" y="16" width="55" height="8" rx="2" fill="#f59e0b"/>
+                <ellipse cx="145" cy="42" rx="45" ry="18" fill="#14b8a6"/>
+                <polygon points="100,42 90,35 90,49" fill="#0f766e"/>
+                <!-- Panah Aksi & Reaksi -->
+                <path d="M82 42 H45" stroke="#ef4444" stroke-width="2.5" marker-end="url(#arrowRed)"/>
+                <text x="62" y="62" font-size="8" text-anchor="middle" fill="#ef4444" font-weight="bold">Aksi (Udara Keluar)</text>
+                <path d="M200 42 H245" stroke="#10b981" stroke-width="2.5"/>
+                <text x="235" y="62" font-size="8" text-anchor="middle" fill="#10b981" font-weight="bold">Reaksi (Gerak Maju →)</text>
+              </svg>
+            </div>
+          </div>
+        `
+      },
+
+      // ==================== HALAMAN 17: BAB 4 (KAPASITAS PERNAPASAN & ESSAY) ====================
+      {
+        num: 17,
+        section: "BAB 4: Balon Statis & Listrik Statis",
+        html: `
+          <div class="book-body">
+            <h3 class="font-bold text-sm text-teal-700 dark:text-teal-300 mb-1">C. Mengukur Kapasitas Pernapasan (Spirometer Sederhana)</h3>
+            <div class="sci-box text-xs font-sansUi">
+              <p class="font-bold mb-1">🫁 Cara Membuat & Mengukur:</p>
+              <ol class="list-decimal pl-4 space-y-1">
+                <li>Isi botol plastik transparan 2 liter dengan air hingga penuh, beri tanda skala tiap 250 mL menggunakan spidol.</li>
+                <li>Balikkan botol di dalam baskom berisi air (pastikan mulut botol terendam agar air di dalam botol tidak tumpah).</li>
+                <li>Masukkan ujung selang plastik bersih ke dalam mulut botol yang terbalik.</li>
+                <li>Tarik napas dalam-dalam, lalu embuskan udara sekuatnya melalui selang. Volume air yang terdorong keluar menunjukkan <strong>kapasitas vital paru-paru</strong> Anda!</li>
+              </ol>
+            </div>
+
+            ${renderQuizCard(
+              'bab4',
+              'Soal Essay Bab 4: Mengapa balon yang telah digosok kain wol dapat menempel di dinding tembok selama beberapa saat?',
+              'Hubungkan dengan muatan negatif balon yang menginduksi muatan di permukaan dinding.',
+              'Balon bermuatan negatif mendekati dinding netral sehingga menolak elektron di permukaan dinding menjauh dan menarik muatan positif dinding mendekat (polarisasi muatan). Gaya tarik elektrostatik ini menahan balon tetap menempel hingga muatannya perlahan netral kembali.'
+            )}
+          </div>
+        `
+      },
+
+      // ==================== HALAMAN 18: BAB 5 (LAVA LAMPU + SIMULASI INTERAKTIF) ====================
+      {
+        num: 18,
+        section: "BAB 5: Eksperimen Kimia Menyenangkan",
+        html: `
+          <div class="book-body">
+            <span class="inline-block px-2.5 py-0.5 rounded bg-purple-600 text-white font-sansUi text-[11px] font-bold mb-1">BAB 5</span>
+            <h2 class="text-lg sm:text-xl font-bold text-purple-700 dark:text-purple-300 mb-1">Eksperimen Kimia Menyenangkan</h2>
+            <h3 class="font-bold text-sm text-amber-700 dark:text-amber-300 mb-1">A. Lava Lampu Buatan Sendiri</h3>
+
+            <p class="text-xs font-sansUi mb-1.5">
+              <strong>Bahan:</strong> Botol bening, minyak goreng (2/3 botol), air berwarna (1/3 botol), dan tablet <em>effervescent</em> (misal vitamin C larut air).
+            </p>
+            <p class="text-xs font-sansUi mb-2">
+              <strong>Prinsip Ilmiah:</strong> Air bersifat <em>polar</em> dan lebih padat (1 g/cm³) daripada minyak yang <em>non-polar</em> (0,8 g/cm³), sehingga keduanya tidak bercampur. Tablet <em>effervescent</em> melepaskan gelembung gas karbon dioksida (CO₂) yang mengangkat tetesan air berwarna ke atas lalu turun kembali saat gas pecah.
+            </p>
+
+            <!-- Simulasi Mini Lava Lamp -->
+            <div class="sci-box font-sansUi text-xs">
+              <div class="flex items-center justify-between mb-1.5">
+                <span class="font-bold text-purple-700 dark:text-purple-300">🧪 Simulasi Mini Lava Lamp</span>
+                <button type="button" onclick="triggerLavaBubbles()" class="px-2.5 py-1 rounded-lg bg-purple-600 hover:bg-purple-500 text-white text-[11px] font-semibold transition">
+                  + Masukkan Tablet Effervescent
+                </button>
+              </div>
+              <div id="lavaSimBox" class="w-full h-24 rounded-xl bg-gradient-to-b from-amber-200/70 via-amber-300/60 to-rose-600/80 border border-amber-400/50 relative overflow-hidden flex items-end justify-center">
+                <span class="text-[10px] font-bold text-white drop-shadow mb-1 z-10">Lapisan Minyak (Atas) & Air Berwarna (Bawah)</span>
+              </div>
+            </div>
+          </div>
+        `
+      },
+
+      // ==================== HALAMAN 19: BAB 5 (VULKANIK MELETUS) ====================
+      {
+        num: 19,
+        section: "BAB 5: Eksperimen Kimia Menyenangkan",
+        html: `
+          <div class="book-body">
+            <h3 class="font-bold text-sm sm:text-base text-rose-600 dark:text-rose-400 mb-1.5">B. Vulkanik yang Meletus (Reaksi Asam-Basa)</h3>
+            <p class="text-xs sm:text-sm">
+              Simulasi letusan gunung berapi ini menunjukkan reaksi kimia klasik antara senyawa basa dan asam yang menghasilkan buih gas melimpah.
+            </p>
+
+            <div class="sci-box text-xs font-sansUi">
+              <p class="font-bold mb-1">🧰 Alat & Bahan:</p>
+              <p class="!mb-0">Miniatur gunung dari tanah liat/plastisin dengan botol kecil di tengah, 2 sdm soda kue (natrium bikarbonat), 1 sdm sabun cuci piring, pewarna makanan merah/oranye, dan 100 mL cuka dapur (asam asetat).</p>
+            </div>
+
+            <div class="sci-box text-xs font-sansUi">
+              <p class="font-bold mb-1">📋 Langkah Percobaan:</p>
+              <ol class="list-decimal pl-4 space-y-1">
+                <li>Masukkan soda kue, sabun cuci piring, dan pewarna makanan ke dalam kawah botol miniatur gunung.</li>
+                <li>Tuangkan cuka dapur ke dalam kawah dan amati lava busa merah meluap keluar!</li>
+              </ol>
+            </div>
+
+            <div class="sci-box text-xs font-sansUi bg-rose-500/10 border-rose-500/30 !mb-0">
+              <p class="font-bold text-rose-700 dark:text-rose-300 mb-0.5">⚗️ Persamaan Reaksi Kimia:</p>
+              <p class="font-mono text-[11px] !mb-1">NaHCO₃ (s) + CH₃COOH (aq) → CH₃COONa (aq) + H₂O (l) + CO₂ (g)↑</p>
+              <p class="!mb-0">Gas karbon dioksida (CO₂) yang terperangkap oleh sabun membentuk busa lava yang menyembur ke atas.</p>
+            </div>
+          </div>
+        `
+      },
+
+      // ==================== HALAMAN 20: BAB 5 (MEMBUAT KRISTAL & LATIHAN) ====================
+      {
+        num: 20,
+        section: "BAB 5: Eksperimen Kimia Menyenangkan",
+        html: `
+          <div class="book-body">
+            <h3 class="font-bold text-sm text-teal-700 dark:text-teal-300 mb-1">C. Membuat Kristal Sendiri (Kristalisasi)</h3>
+            <div class="sci-box text-xs font-sansUi">
+              <p class="font-bold mb-1">💎 Langkah Membuat Kristal Garam / Gula:</p>
+              <ol class="list-decimal pl-4 space-y-1">
+                <li>Panaskan 200 mL air hingga mendidih (dengan pengawasan orang dewasa), lalu larutkan garam dapur atau gula pasir sedikit demi sedikit sambil diaduk hingga tidak dapat larut lagi (<strong>larutan lewat jenuh / supersaturasi</strong>).</li>
+                <li>Tuang larutan ke gelas bening. Ikat seutas benang katun pada pensil dan gantungkan ujung benang ke dalam larutan.</li>
+                <li>Diamkan selama 2–5 hari di tempat tenang. Saat air menguap dan suhu menurun, molekul zat terlarut menyusun diri secara teratur membentuk kristal geometris di sepanjang benang!</li>
+              </ol>
+            </div>
+
+            ${renderQuizCard(
+              'bab5',
+              'Gas apa yang dihasilkan dari pencampuran baking soda dan cuka sehingga menimbulkan efek letusan lava?',
+              'Rumus kimianya terdiri dari satu atom karbon dan dua atom oksigen.',
+              'Gas Karbon Dioksida (CO₂). Gas ini tidak berwarna dan tidak berbau, serta mampu mendorong busa sabun keluar menyerupai aliran lava gunung berapi.'
+            )}
+          </div>
+        `
+      },
+
+      // ==================== HALAMAN 21: BAB 6 (AYUNAN BANDUL & GHS + SIMULASI) ====================
+      {
+        num: 21,
+        section: "BAB 6: Eksperimen Fisika Seru",
+        html: `
+          <div class="book-body">
+            <span class="inline-block px-2.5 py-0.5 rounded bg-indigo-600 text-white font-sansUi text-[11px] font-bold mb-1">BAB 6</span>
+            <h2 class="text-lg sm:text-xl font-bold text-indigo-700 dark:text-indigo-300 mb-1">Eksperimen Fisika Seru</h2>
+            <h3 class="font-bold text-sm text-amber-700 dark:text-amber-300 mb-1">A & B. Gerak dan Gaya: Ayunan Bandul & Gerak Harmonis</h3>
+
+            <p class="text-xs font-sansUi mb-1.5">
+              Ayunan bandul sederhana melakukan <strong>Gerak Harmonis Sederhana (GHS)</strong> akibat adanya <em>gaya pemulih</em> (komponen gaya gravitasi) yang selalu mengarahkan bandul kembali ke titik setimbang. Periode ayunan (T) dirumuskan:
+            </p>
+            <div class="text-center font-mono text-xs font-bold bg-indigo-500/10 border border-indigo-500/30 rounded-lg py-1 mb-2">
+              T = 2π √(L / g)
+            </div>
+
+            <!-- Simulasi Interaktif Ayunan Bandul -->
+            <div class="sci-box font-sansUi text-xs !mb-0">
+              <div class="flex flex-wrap items-center justify-between gap-2 mb-1">
+                <span class="font-bold text-indigo-700 dark:text-indigo-300">🕰️ Simulasi Interaktif Bandul</span>
+                <div class="flex items-center gap-2">
+                  <label class="text-[11px]">Panjang Tali (L): <strong id="pendulumLenVal">80</strong> cm</label>
+                  <input id="pendulumLenSlider" type="range" min="40" max="120" value="80" oninput="updatePendulumLength(this.value)" class="w-20 accent-indigo-600" />
+                </div>
+              </div>
+              <canvas id="pendulumCanvas" class="w-full h-28 rounded-lg bg-slate-900/90"></canvas>
+              <p class="text-[10px] text-slate-500 mt-1 !mb-0">Semakin panjang tali (L), semakin besar periode ayunan (T) sehingga ayunan semakin lambat.</p>
+            </div>
+          </div>
+        `
+      },
+
+      // ==================== HALAMAN 22: BAB 6 (DETAIL BANDUL MATEMATIS & FISIS) ====================
+      {
+        num: 22,
+        section: "BAB 6: Eksperimen Fisika Seru",
+        html: `
+          <div class="book-body">
+            <h3 class="font-bold text-sm text-indigo-700 dark:text-indigo-300 mb-1.5">Perbedaan Bandul Matematis & Bandul Fisis</h3>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 font-sansUi text-xs mb-2">
+              <div class="sci-box !mb-0">
+                <p class="font-bold text-teal-700 dark:text-teal-300 mb-0.5">1. Bandul Matematis</p>
+                <p class="!mb-0 !text-left text-[11px]">Model ideal berupa beban titik bermassa m yang digantung pada tali ringan tak bermassa sepanjang L dengan sudut simpangan kecil (&lt; 15°).</p>
+              </div>
+              <div class="sci-box !mb-0">
+                <p class="font-bold text-amber-700 dark:text-amber-300 mb-0.5">2. Bandul Fisis</p>
+                <p class="!mb-0 !text-left text-[11px]">Benda tegar nyata berdimensi luas yang berayun pada sumbu putar tertentu, dipengaruhi momen inersia (I) benda tersebut.</p>
+              </div>
+            </div>
+
+            <div class="sci-box text-xs font-sansUi !mb-0">
+              <p class="font-bold mb-1">📋 Langkah Percobaan Ayunan Bandul:</p>
+              <ol class="list-decimal pl-4 space-y-1">
+                <li>Ikatkan beban (mur/bandul logam) pada benang sepanjang 50 cm dan gantungkan pada statif/penyangga.</li>
+                <li>Simpangkan bandul sejauh 10°, lepaskan, dan catat waktu untuk 10 ayunan penuh menggunakan stopwatch.</li>
+                <li>Bagi total waktu dengan 10 untuk memperoleh Periode (T). Ulangi dengan panjang tali 80 cm dan 100 cm, lalu bandingkan hasilnya!</li>
+              </ol>
+            </div>
+          </div>
+        `
+      },
+
+      // ==================== HALAMAN 23: BAB 6 (KOMPAS SEDERHANA) ====================
+      {
+        num: 23,
+        section: "BAB 6: Eksperimen Fisika Seru",
+        html: `
+          <div class="book-body">
+            <h3 class="font-bold text-sm sm:text-base text-indigo-700 dark:text-indigo-300 mb-1.5">C. Eksperimen Magnet: Membuat Kompas Sederhana</h3>
+            <p class="text-xs sm:text-sm">
+              Bumi kita bertindak layaknya magnet batang raksasa yang memiliki kutub magnet utara dan selatan. Kita dapat mendeteksinya dengan jarum jahit!
+            </p>
+
+            <div class="sci-box text-xs font-sansUi">
+              <p class="font-bold mb-1">🧰 Alat & Bahan:</p>
+              <p class="!mb-0">1 jarum jahit baja, magnet batang/magnet kulkas, potongan gabus atau styrofoam bundar kecil, mangkuk plastik berisi air.</p>
+            </div>
+
+            <div class="sci-box text-xs font-sansUi">
+              <p class="font-bold mb-1">📋 Langkah Pembuatan:</p>
+              <ol class="list-decimal pl-4 space-y-1">
+                <li>Gosokkan magnet pada jarum jahit secara <strong>satu arah</strong> (dari pangkal ke ujung) sebanyak 30–40 kali agar domain magnetik jarum searah.</li>
+                <li>Tusukkan atau letakkan jarum bermagnet secara mendatar di atas potongan styrofoam.</li>
+                <li>Apungkan styrofoam di tengah mangkuk berisi air yang tenang.</li>
+                <li>Amati jarum berputar hingga berhenti dan selalu menunjuk arah <strong>Utara–Selatan</strong> geografis Bumi!</li>
+              </ol>
+            </div>
+          </div>
+        `
+      },
+
+      // ==================== HALAMAN 24: BAB 6 (KALEIDOSKOP & LATIHAN) ====================
+      {
+        num: 24,
+        section: "BAB 6: Eksperimen Fisika Seru",
+        html: `
+          <div class="book-body">
+            <h3 class="font-bold text-sm text-indigo-700 dark:text-indigo-300 mb-1">D. Optik: Membuat Kaleidoskop</h3>
+            <div class="sci-box text-xs font-sansUi">
+              <p class="font-bold mb-1">🔭 Prinsip Pemantulan Cahaya & Simetri Optik:</p>
+              <p class="!mb-1">Susun <strong>3 buah cermin datar</strong> persegi panjang membentuk prisma segitiga sama sisi dengan sudut antarcermin sebesar <strong>60°</strong> di dalam tabung karton. Tutup satu ujung dengan plastik bening berisi manik-manik warna-warni dan kertas kalkir.</p>
+              <p class="!mb-0">Saat cahaya masuk dan dipantulkan berulang kali oleh ketiga cermin bersudut 60°, terbentuk pola simetri mozaik indah yang jumlah bayangannya mengikuti rumus <em>n = (360° / α) - 1</em>.</p>
+            </div>
+
+            ${renderQuizCard(
+              'bab6',
+              'Jika panjang tali ayunan bandul diperpanjang menjadi 4 kali lipat, bagaimana perubahan periode (T) ayunannya?',
+              'Gunakan rumus T = 2π√(L/g). Berapakah akar kuadrat dari 4?',
+              'Periode ayunan (T) akan menjadi 2 kali lebih besar (lebih lambat), karena T berbanding lurus dengan akar kuadrat panjang tali (√4 = 2).'
+            )}
+          </div>
+        `
+      },
+
+      // ==================== HALAMAN 25: BAB 7 (SIKLUS HIDUP TUMBUHAN) ====================
+      {
+        num: 25,
+        section: "BAB 7: Eksperimen Biologi Mudah",
+        html: `
+          <div class="book-body">
+            <span class="inline-block px-2.5 py-0.5 rounded bg-emerald-600 text-white font-sansUi text-[11px] font-bold mb-1">BAB 7</span>
+            <h2 class="text-lg sm:text-xl font-bold text-emerald-700 dark:text-emerald-300 mb-1">Eksperimen Biologi Mudah</h2>
+            <h3 class="font-bold text-sm text-amber-700 dark:text-amber-300 mb-1.5">A. Menghasilkan Biji: Siklus Hidup Tumbuhan</h3>
+
+            <p class="text-xs sm:text-sm">
+              Amati keajaiban pertumbuhan tanaman kacang hijau di atas kapas basah selama 7 hari untuk melihat lima fase utama siklus hidup tumbuhan berbiji:
+            </p>
+
+            <div class="sci-box text-xs font-sansUi space-y-1">
+              <p class="!mb-0.5"><strong>1. Perkecambahan (Germinasi):</strong> Biji menyerap air (imbibisi), kulit biji pecah, dan radikula (calon akar) tumbuh ke bawah.</p>
+              <p class="!mb-0.5"><strong>2. Pertumbuhan Vegetatif:</strong> Batang memanjang dan daun sejati mulai terbuka untuk melakukan fotosintesis.</p>
+              <p class="!mb-0.5"><strong>3. Berbunga:</strong> Tumbuhan dewasa membentuk bunga sebagai organ reproduksi generatif.</p>
+              <p class="!mb-0.5"><strong>4. Penyerbukan (Polinasi):</strong> Serbuk sari jatuh ke kepala putik dengan bantuan angin, serangga, atau air.</p>
+              <p class="!mb-0"><strong>5. Pembuahan (Fertilisasi):</strong> Peleburan sel kelamin jantan dan betina menghasilkan bakal biji yang kelak menjadi tanaman baru.</p>
+            </div>
+          </div>
+        `
+      },
+
+      // ==================== HALAMAN 26: BAB 7 (MEMBUAT YOGURT SENDIRI) ====================
+      {
+        num: 26,
+        section: "BAB 7: Eksperimen Biologi Mudah",
+        html: `
+          <div class="book-body">
+            <h3 class="font-bold text-sm sm:text-base text-emerald-700 dark:text-emerald-300 mb-1.5">B. Mikrobiologi: Membuat Yogurt Sendiri</h3>
+            <p class="text-xs sm:text-sm">
+              Tidak semua bakteri merugikan! Dalam bioteknologi pangan, bakteri baik mengubah susu cair menjadi yogurt yang kental, segar, dan kaya probiotik.
+            </p>
+
+            <div class="sci-box text-xs font-sansUi">
+              <p class="font-bold mb-1">🧰 Bahan & Langkah Pembuatan:</p>
+              <ol class="list-decimal pl-4 space-y-1">
+                <li>Panaskan 500 mL susu sapi segar hingga suhu ±80°C (jangan sampai mendidih meluap) untuk membunuh bakteri pengganggu, lalu dinginkan hingga hangat kuku (±40–45°C).</li>
+                <li>Masukkan 2 sdm bibit yogurt plain yang mengandung bakteri <em>Lactobacillus bulgaricus</em> dan <em>Streptococcus thermophilus</em>, aduk perlahan.</li>
+                <li>Tutup rapat wadah dan simpan di tempat hangat selama 8–12 jam.</li>
+              </ol>
+            </div>
+
+            <div class="sci-box text-xs font-sansUi border-l-4 border-l-emerald-500 !mb-0">
+              <p class="font-bold text-emerald-700 dark:text-emerald-300 mb-0.5">🦠 Penjelasan Ilmiah (Fermentasi Asam Laktat):</p>
+              <p class="!mb-0">Bakteri baik memfermentasi gula susu (<strong>laktosa</strong>) menjadi <strong>asam laktat</strong>. Peningkatan keasaman menyebabkan protein susu (kasein) menggumpal sehingga susu mengental dan berasa asam segar.</p>
+            </div>
+          </div>
+        `
+      },
+
+      // ==================== HALAMAN 27: BAB 7 (FOTOSINTESIS & LATIHAN) ====================
+      {
+        num: 27,
+        section: "BAB 7: Eksperimen Biologi Mudah",
+        html: `
+          <div class="book-body">
+            <h3 class="font-bold text-sm text-emerald-700 dark:text-emerald-300 mb-1">C. Studi Daun: Fotosintesis dan Perannya (Uji Sachs)</h3>
+            <div class="sci-box text-xs font-sansUi">
+              <p class="font-bold mb-1">🍃 Langkah Uji Kanji (Amilum) Hasil Fotosintesis:</p>
+              <ol class="list-decimal pl-4 space-y-1">
+                <li>Tutup sebagian permukaan daun tanaman dengan kertas aluminium foil selama 24 jam agar tidak terkena sinar matahari.</li>
+                <li>Petik daun, rebus dalam air mendidih untuk mematikan sel daun, lalu rendam dalam alkohol panas (menggunakan penangas air) untuk melarutkan klorofil hingga daun pucat.</li>
+                <li>Tetesi daun dengan larutan <strong>Iodine (Lugol/Betadine)</strong>: bagian daun yang terkena cahaya berubah menjadi <strong>biru tua kehitaman</strong> (membuktikan terbentuknya amilum/karbohidrat), sedangkan bagian tertutup tetap pucat!</li>
+              </ol>
+            </div>
+
+            ${renderQuizCard(
+              'bab7',
+              'Mengapa daun harus direndam dalam alkohol panas sebelum ditetesi larutan iodine pada percobaan fotosintesis?',
+              'Ingat warna hijau daun yang dapat menutupi hasil perubahan warna iodine.',
+              'Alkohol berfungsi melarutkan klorofil (zat hijau daun) sehingga daun menjadi pucat dan perubahan warna biru kehitaman akibat reaksi iodine dengan amilum dapat diamati dengan jelas.'
+            )}
+          </div>
+        `
+      },
+
+      // ==================== HALAMAN 28: BAB 8 (DAUR ULANG KERTAS) ====================
+      {
+        num: 28,
+        section: "BAB 8: Ekologi dan Lingkungan",
+        html: `
+          <div class="book-body">
+            <span class="inline-block px-2.5 py-0.5 rounded bg-teal-700 text-white font-sansUi text-[11px] font-bold mb-1">BAB 8</span>
+            <h2 class="text-lg sm:text-xl font-bold text-teal-700 dark:text-teal-300 mb-1">Eksperimen Ekologi & Lingkungan</h2>
+            <h3 class="font-bold text-sm text-amber-700 dark:text-amber-300 mb-1.5">A. Daur Ulang Kertas di Rumah</h3>
+
+            <p class="text-xs sm:text-sm">
+              Kertas terbuat dari serat selulosa kayu. Mendaur ulang kertas bekas membantu mengurangi penebangan pohon dan menghemat energi.
+            </p>
+
+            <div class="sci-box text-xs font-sansUi">
+              <p class="font-bold mb-1">🧰 Alat & Bahan:</p>
+              <p class="!mb-0">Kertas bekas yang sudah disobek kecil-kecil, air hangat, blender, baskom besar, dan bingkai saringan kasa (screen cetak).</p>
+            </div>
+
+            <div class="sci-box text-xs font-sansUi !mb-0">
+              <p class="font-bold mb-1">📋 Langkah Pembuatan Kertas Daur Ulang:</p>
+              <ol class="list-decimal pl-4 space-y-1">
+                <li>Rendam sobekan kertas bekas dalam air hangat selama 2 jam hingga melunak.</li>
+                <li>Haluskan kertas dan air menggunakan blender hingga terbentuk bubur kertas (<strong>pulp</strong>).</li>
+                <li>Tuang bubur kertas ke baskom berisi air, masukkan bingkai saringan dari samping dan angkat perlahan secara mendatar.</li>
+                <li>Tiriskan air, tekan dengan spons/kain kering, lalu jemur di bawah sinar matahari hingga lembaran kertas daur ulang kering sempurna!</li>
+              </ol>
+            </div>
+          </div>
+        `
+      },
+
+      // ==================== HALAMAN 29: BAB 8 (UJI KUALITAS AIR & TANAH) ====================
+      {
+        num: 29,
+        section: "BAB 8: Ekologi dan Lingkungan",
+        html: `
+          <div class="book-body">
+            <h3 class="font-bold text-sm sm:text-base text-teal-700 dark:text-teal-300 mb-1.5">B. Uji Kualitas Air dan Tanah</h3>
+            <p class="text-xs sm:text-sm">
+              Kesehatan ekosistem sangat ditentukan oleh parameter kimia dan fisika air maupun tanah di sekitarnya:
+            </p>
+
+            <div class="space-y-1.5 font-sansUi text-xs">
+              <div class="sci-box !p-2 !mb-0">
+                <strong>🧪 1. Derajat Keasaman (pH):</strong> Air bersih umumnya memiliki pH netral (6,5–8,5), sedangkan tanah subur berkisar pH 6,0–7,0. Dapat diuji dengan kertas lakmus, pH meter, atau ekstrak kubis ungu/kunyit.
+              </div>
+              <div class="sci-box !p-2 !mb-0">
+                <strong>🌾 2. Kadar Nitrat & Fosfat:</strong> Nutrisi penting bagi tumbuhan, namun kadar berlebih akibat limbah pupuk memicu <em>eutrofikasi</em> (ledakan alga di sungai/danau).
+              </div>
+              <div class="sci-box !p-2 !mb-0">
+                <strong>💧 3. Kekerasan Air (Kesadahan):</strong> Menunjukkan kandungan ion kalsium (Ca²⁺) dan magnesium (Mg²⁺). Air sadah sulit menghasilkan busa saat dicampur sabun.
+              </div>
+              <div class="sci-box !p-2 !mb-0">
+                <strong>🌱 4. Kandungan Organik & Kelembaban Tanah:</strong> Tanah yang kaya humus berwarna gelap, gembur, dan mampu menahan kelembaban air dengan baik untuk akar tanaman.
+              </div>
+            </div>
+          </div>
+        `
+      },
+
+      // ==================== HALAMAN 30: BAB 8 (TERRARIUM & LATIHAN) ====================
+      {
+        num: 30,
+        section: "BAB 8: Ekologi dan Lingkungan",
+        html: `
+          <div class="book-body">
+            <h3 class="font-bold text-sm text-teal-700 dark:text-teal-300 mb-1">C. Membuat Ekosistem Mini: Terrarium</h3>
+            <div class="sci-box text-xs font-sansUi">
+              <p class="font-bold mb-1">🌿 Struktur Lapisan Terrarium dalam Toples Kaca:</p>
+              <p class="!mb-1">Susun dari dasar ke atas: <strong>Batu kerikil</strong> (drainase) → <strong>Arang aktif</strong> (mencegah jamur/bau) → <strong>Tanah subur/humus</strong> → <strong>Tanaman mini</strong> (lumut, pakis kecil, sukulen) dan batu hias.</p>
+              <p class="!mb-0"><strong>Siklus Air Tertutup:</strong> Air yang disiramkan menguap (<em>evaporasi</em> & <em>transpirasi</em>), mengembun di dinding kaca (<em>kondensasi</em>), lalu menetes kembali membasahi tanah layaknya hujan mini!</p>
+            </div>
+
+            ${renderQuizCard(
+              'bab8',
+              'Sebutkan komponen biotik dan abiotik yang saling berinteraksi di dalam sebuah terrarium!',
+              'Biotik berarti komponen makhluk hidup, sedangkan abiotik adalah benda tak hidup.',
+              'Komponen biotik: tanaman mini (lumut/pakis) dan mikroorganisme tanah. Komponen abiotik: air, udara, cahaya matahari, tanah, kerikil, dan arang aktif.'
+            )}
+          </div>
+        `
+      },
+
+      // ==================== HALAMAN 31: BAB 9 (MATEMATIKA DALAM DAPUR) ====================
+      {
+        num: 31,
+        section: "BAB 9: Sains dalam Kehidupan Sehari-hari",
+        html: `
+          <div class="book-body">
+            <span class="inline-block px-2.5 py-0.5 rounded bg-orange-600 text-white font-sansUi text-[11px] font-bold mb-1">BAB 9</span>
+            <h2 class="text-lg sm:text-xl font-bold text-orange-700 dark:text-orange-300 mb-1">Sains dalam Kehidupan Sehari-hari</h2>
+            <h3 class="font-bold text-sm text-teal-700 dark:text-teal-300 mb-1.5">A. Matematika dalam Dapur</h3>
+
+            <p class="text-xs sm:text-sm">
+              Setiap kali memasak atau membuat kue, kita sebenarnya sedang menerapkan konsep matematika presisi:
+            </p>
+
+            <div class="space-y-2 font-sansUi text-xs">
+              <div class="sci-box !mb-0">
+                <p class="font-bold text-orange-700 dark:text-orange-300 mb-0.5">⚖️ 1. Mengukur Bahan & Konversi Satuan</p>
+                <p class="!mb-0">Memahami konversi massa dan volume (gram, kilogram, mililiter, sendok takar) agar tekstur masakan konsisten.</p>
+              </div>
+              <div class="sci-box !mb-0">
+                <p class="font-bold text-teal-700 dark:text-teal-300 mb-0.5">➗ 2. Proporsi dan Rasio</p>
+                <p class="!mb-0">Contoh rasio dasar adonan roti (tepung : air = 5 : 3) atau memperbesar resep dari 4 porsi menjadi 12 porsi dengan mengalikan semua takaran dengan faktor 3.</p>
+              </div>
+              <div class="sci-box !mb-0">
+                <p class="font-bold text-indigo-700 dark:text-indigo-300 mb-0.5">⏱️ 3. Waktu & Suhu Memasak</p>
+                <p class="!mb-0">Mengatur laju perpindahan panas (konduksi, konveksi, radiasi) terhadap durasi pemanggangan agar makanan matang merata tanpa gosong.</p>
+              </div>
+            </div>
+          </div>
+        `
+      },
+
+      // ==================== HALAMAN 32: BAB 9 (ENERGI DI RUMAH) ====================
+      {
+        num: 32,
+        section: "BAB 9: Sains dalam Kehidupan Sehari-hari",
+        html: `
+          <div class="book-body">
+            <h3 class="font-bold text-sm sm:text-base text-orange-700 dark:text-orange-300 mb-1.5">B. Energi di Rumah (Audit Energi Listrik)</h3>
+            <p class="text-xs sm:text-sm">
+              Energi listrik diukur dalam satuan <strong>kilowatt-hour (kWh)</strong>. Pemahaman fisika daya listrik (<em>P = W / t</em>) membantu kita berhemat biaya sekaligus menjaga lingkungan.
+            </p>
+
+            <div class="sci-box font-sansUi text-xs">
+              <p class="font-bold text-teal-700 dark:text-teal-300 mb-1.5">💡 Perbandingan Lampu LED vs Lampu Pijar:</p>
+              <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse text-[11px]">
+                  <thead>
+                    <tr class="border-b border-slate-300 dark:border-slate-600">
+                      <th class="py-1">Aspek</th>
+                      <th class="py-1 text-rose-600 dark:text-rose-400">Lampu Pijar</th>
+                      <th class="py-1 text-emerald-600 dark:text-emerald-400">Lampu LED</th>
+                    </tr>
+                  </thead>
+                  <tbody class="divide-y divide-slate-200 dark:divide-slate-700">
+                    <tr>
+                      <td class="py-1 font-semibold">Daya (Terang Setara)</td>
+                      <td class="py-1">60 Watt</td>
+                      <td class="py-1 font-bold">8 Watt (Hemat ±85%)</td>
+                    </tr>
+                    <tr>
+                      <td class="py-1 font-semibold">Konversi Energi</td>
+                      <td class="py-1">90% terbuang jadi panas</td>
+                      <td class="py-1">Mayoritas jadi cahaya</td>
+                    </tr>
+                    <tr>
+                      <td class="py-1 font-semibold">Usia Pakai</td>
+                      <td class="py-1">± 1.000 jam</td>
+                      <td class="py-1">± 25.000 jam</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        `
+      },
+
+      // ==================== HALAMAN 33: BAB 9 (SAINS MEMASAK & LATIHAN) ====================
+      {
+        num: 33,
+        section: "BAB 9: Sains dalam Kehidupan Sehari-hari",
+        html: `
+          <div class="book-body">
+            <h3 class="font-bold text-sm text-orange-700 dark:text-orange-300 mb-1">C. Ilmu Pengetahuan di Dapur: Fenomena Memasak</h3>
+            <div class="space-y-1.5 font-sansUi text-xs mb-2">
+              <div class="sci-box !p-2 !mb-0">
+                <strong>🍞 1. Reaksi Maillard:</strong> Reaksi kimia antara asam amino (protein) dan gula pereduksi pada suhu >140°C yang menghasilkan warna cokelat keemasan dan aroma gurih lezat pada roti panggang atau daging bakar.
+              </div>
+              <div class="sci-box !p-2 !mb-0">
+                <strong>🍚 2. Gelatinisasi Pati:</strong> Granula pati (beras, tepung, kentang) menyerap air dan membengkak saat dipanaskan sehingga mengental menjadi nasi pulen atau saus.
+              </div>
+              <div class="sci-box !p-2 !mb-0">
+                <strong>🥚 3. Emulsi (Lesitin Kuning Telur):</strong> Minyak dan cuka tidak bisa menyatu dalam mayones tanpa <em>emulsifier</em>. Molekul <strong>lesitin</strong> pada kuning telur memiliki ujung suka air (hidrofilik) dan ujung suka lemak (hidrofobik) yang mengikat keduanya!
+              </div>
+            </div>
+
+            ${renderQuizCard(
+              'bab9',
+              'Mengapa kuning telur diperlukan saat membuat mayones dari campuran minyak dan cuka/air jeruk?',
+              'Ingat sifat air (polar) dan minyak (non-polar) serta peran zat pengemulsi.',
+              'Kuning telur mengandung lesitin yang berfungsi sebagai emulsifier alami untuk menyatukan molekul air dan minyak agar membentuk emulsi yang stabil dan lembut.'
+            )}
+          </div>
+        `
+      },
+
+      // ==================== HALAMAN 34: BAB 10 (KONSEP PROJEK SAINS) ====================
+      {
+        num: 34,
+        section: "BAB 10: Projek Akhir Sains",
+        html: `
+          <div class="book-body">
+            <span class="inline-block px-2.5 py-0.5 rounded bg-rose-600 text-white font-sansUi text-[11px] font-bold mb-1">BAB 10</span>
+            <h2 class="text-lg sm:text-xl font-bold text-rose-700 dark:text-rose-300 mb-1">Projek Akhir Sains</h2>
+            <h3 class="font-bold text-sm text-teal-700 dark:text-teal-300 mb-1.5">A. Konsep, Tujuan & Literasi Ilmiah</h3>
+
+            <p class="text-xs sm:text-sm">
+              Projek Akhir Sains adalah puncak pembelajaran yang melatih pembaca menerapkan <strong>literasi ilmiah</strong> untuk memecahkan masalah nyata di lingkungan sekitar secara sistematis.
+            </p>
+
+            <div class="sci-box text-xs font-sansUi !mb-0">
+              <p class="font-bold text-rose-700 dark:text-rose-300 mb-1">🔄 6 Tahap Siklus Projek Sains:</p>
+              <ol class="list-decimal pl-4 space-y-1">
+                <li><strong>Identifikasi Masalah:</strong> Mengamati fenomena sekitar dan merumuskan pertanyaan penelitian.</li>
+                <li><strong>Studi Literatur:</strong> Membaca buku, jurnal, dan sumber tepercaya terkait topik.</li>
+                <li><strong>Perumusan Hipotesis:</strong> Menyusun dugaan sementara yang dapat diuji.</li>
+                <li><strong>Perancangan & Eksperimen:</strong> Menentukan variabel dan melakukan pengujian berulang.</li>
+                <li><strong>Analisis Data:</strong> Mengolah data ke dalam tabel, grafik, dan menafsirkan hasilnya.</li>
+                <li><strong>Komunikasi Ilmiah:</strong> Menyusun laporan tertulis dan mempresentasikan temuan.</li>
+              </ol>
+            </div>
+          </div>
+        `
+      },
+
+      // ==================== HALAMAN 35: BAB 10 (VARIABEL EKSPERIMEN) ====================
+      {
+        num: 35,
+        section: "BAB 10: Projek Akhir Sains",
+        html: `
+          <div class="book-body">
+            <h3 class="font-bold text-sm sm:text-base text-teal-700 dark:text-teal-300 mb-1.5">B. Langkah Pelaksanaan & Penentuan Variabel</h3>
+            <p class="text-xs sm:text-sm">
+              Agar eksperimen projek sains valid dan adil (<em>fair test</em>), peneliti wajib membedakan tiga jenis variabel penelitian:
+            </p>
+
+            <div class="space-y-2 font-sansUi text-xs">
+              <div class="sci-box !mb-0 border-l-4 border-l-indigo-500">
+                <p class="font-bold text-indigo-700 dark:text-indigo-300 mb-0.5">🎛️ 1. Variabel Independen (Variabel Bebas)</p>
+                <p class="!mb-0">Faktor yang sengaja diubah-ubah oleh peneliti untuk dilihat pengaruhnya (contoh: <em>jenis larutan perendam bunga</em>).</p>
+              </div>
+              <div class="sci-box !mb-0 border-l-4 border-l-emerald-500">
+                <p class="font-bold text-emerald-700 dark:text-emerald-300 mb-0.5">📊 2. Variabel Dependen (Variabel Terikat)</p>
+                <p class="!mb-0">Hasil atau respon yang diukur dan diamati sebagai akibat perubahan variabel bebas (contoh: <em>tingkat kesegaran dan lama mekar kelopak bunga</em>).</p>
+              </div>
+              <div class="sci-box !mb-0 border-l-4 border-l-amber-500">
+                <p class="font-bold text-amber-700 dark:text-amber-300 mb-0.5">🔒 3. Variabel Kontrol</p>
+                <p class="!mb-0">Semua faktor lain yang dibuat sama persis agar tidak memengaruhi hasil (contoh: <em>jenis bunga mawar, volume air 200 mL, suhu ruangan, dan intensitas cahaya</em>).</p>
+              </div>
+            </div>
+          </div>
+        `
+      },
+
+      // ==================== HALAMAN 36: BAB 10 (KOMPONEN LAPORAN ILMIAH 1-5) ====================
+      {
+        num: 36,
+        section: "BAB 10: Projek Akhir Sains",
+        html: `
+          <div class="book-body">
+            <h3 class="font-bold text-sm sm:text-base text-teal-700 dark:text-teal-300 mb-1.5">C. Penyusunan Laporan Ilmiah (Komponen 1–5)</h3>
+            <p class="text-xs font-sansUi mb-2">
+              Laporan ilmiah yang baik disusun secara runtut dalam <strong>9 komponen standar</strong>:
+            </p>
+            <div class="space-y-1.5 font-sansUi text-xs">
+              <div class="sci-box !p-2 !mb-0">
+                <strong>1. Judul Penelitian:</strong> Singkat, jelas, spesifik, dan menggambarkan variabel yang diteliti.
+              </div>
+              <div class="sci-box !p-2 !mb-0">
+                <strong>2. Abstrak:</strong> Ringkasan padat (150–250 kata) berisi tujuan, metode, hasil utama, dan kesimpulan.
+              </div>
+              <div class="sci-box !p-2 !mb-0">
+                <strong>3. Pendahuluan:</strong> Memuat latar belakang masalah, rumusan masalah, tujuan penelitian, dan hipotesis.
+              </div>
+              <div class="sci-box !p-2 !mb-0">
+                <strong>4. Landasan Teori:</strong> Tinjauan pustaka ilmiah yang mendasari fenomena eksperimen.
+              </div>
+              <div class="sci-box !p-2 !mb-0">
+                <strong>5. Metode Penelitian:</strong> Rincian alat, bahan, variabel penelitian, serta prosedur langkah kerja secara kronologis.
+              </div>
+            </div>
+          </div>
+        `
+      },
+
+      // ==================== HALAMAN 37: BAB 10 (KOMPONEN 6-9 & TABEL BUNGA MAWAR) ====================
+      {
+        num: 37,
+        section: "BAB 10: Projek Akhir Sains",
+        html: `
+          <div class="book-body">
+            <h3 class="font-bold text-sm text-teal-700 dark:text-teal-300 mb-1">Komponen Laporan Ilmiah (6–9) & Contoh Data</h3>
+            <div class="font-sansUi text-xs space-y-1 mb-2">
+              <p class="!mb-0.5"><strong>6. Hasil Penelitian:</strong> Penyajian data objektif berupa tabel pengamatan atau grafik.</p>
+              <p class="!mb-0.5"><strong>7. Pembahasan:</strong> Interpretasi mengapa hasil tersebut terjadi berdasarkan teori sains.</p>
+              <p class="!mb-0.5"><strong>8. Kesimpulan:</strong> Jawaban ringkas atas rumusan masalah dan pembuktian hipotesis.</p>
+              <p class="!mb-0"><strong>9. Daftar Pustaka:</strong> Sumber rujukan dengan format konsisten (APA, MLA, atau Chicago).</p>
+            </div>
+
+            <!-- Contoh Tabel Pengamatan Bunga Mawar -->
+            <div class="sci-box font-sansUi text-[11px] !mb-0">
+              <p class="font-bold text-rose-700 dark:text-rose-300 mb-1">🌹 Contoh Tabel 10.1: Pengamatan Kesegaran Bunga Mawar (Hari ke-5)</p>
+              <table class="w-full text-left border-collapse">
+                <thead>
+                  <tr class="border-b border-slate-300 dark:border-slate-600">
+                    <th class="py-1">Perlakuan Air</th>
+                    <th class="py-1">Kondisi Kelopak</th>
+                    <th class="py-1">Warna Daun</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-200 dark:divide-slate-700">
+                  <tr>
+                    <td class="py-1 font-semibold">Air Biasa (Kontrol)</td>
+                    <td class="py-1">Mulai layu & rontok</td>
+                    <td class="py-1">Hijau kekuningan</td>
+                  </tr>
+                  <tr>
+                    <td class="py-1 font-semibold">Air + 1 sdt Gula</td>
+                    <td class="py-1">Tetap mekar & segar</td>
+                    <td class="py-1">Hijau segar</td>
+                  </tr>
+                  <tr>
+                    <td class="py-1 font-semibold">Air + 2 sdm Garam</td>
+                    <td class="py-1">Kering & layu cepat</td>
+                    <td class="py-1">Cokelat kering</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        `
+      },
+
+      // ==================== HALAMAN 38: BAB 10 (REFLEKSI, RANGKUMAN & LATIHAN) ====================
+      {
+        num: 38,
+        section: "BAB 10: Projek Akhir Sains",
+        html: `
+          <div class="book-body">
+            <div class="sci-box text-xs font-sansUi border-l-4 border-l-rose-500">
+              <p class="font-bold text-rose-700 dark:text-rose-300 mb-1">🌟 Refleksi, Evaluasi & Rangkuman Bab 10</p>
+              <p class="!mb-0">Presentasikan hasil projek secara percaya diri menggunakan alat peraga visual. Evaluasi kendala selama percobaan sebagai bahan perbaikan penelitian selanjutnya. Sains tidak pernah berhenti pada satu jawaban, melainkan selalu membuka pintu rasa ingin tahu baru!</p>
+            </div>
+
+            ${renderQuizCard(
+              'bab10',
+              'Berdasarkan Tabel 10.1 pada halaman sebelumnya, tentukan Variabel Bebas dan Variabel Terikat dari percobaan bunga mawar tersebut!',
+              'Lihat kolom pertama (yang dibedakan) dan kolom kedua/ketiga (yang diamati hasilnya).',
+              'Variabel Bebas: Jenis larutan perendam (air biasa, air gula, air garam). Variabel Terikat: Tingkat kesegaran kelopak dan perubahan warna daun bunga mawar.'
+            )}
+          </div>
+        `
+      },
+
+      // ==================== HALAMAN 39: DAFTAR PUSTAKA ====================
+      {
+        num: 39,
+        section: "Daftar Pustaka",
+        html: `
+          <div class="book-body">
+            <h2 class="text-lg sm:text-xl font-bold text-teal-700 dark:text-teal-300 border-b border-slate-300 dark:border-slate-700 pb-1.5 mb-2.5">
+              📚 Daftar Pustaka
+            </h2>
+            <ul class="space-y-2 font-sansUi text-[11px] sm:text-xs leading-relaxed">
+              <li>Alberts, B., et al. (2015). <em>Molecular Biology of the Cell</em> (6th ed.). New York: Garland Science.</li>
+              <li>Brown, T. L., LeMay, H. E., & Bursten, B. E. (2018). <em>Chemistry: The Central Science</em> (14th ed.). Pearson Education.</li>
+              <li>Campbell, N. A., & Reece, J. B. (2017). <em>Biologi</em> (Edisi Kedelapan). Jakarta: Penerbit Erlangga.</li>
+              <li>Halliday, D., Resnick, R., & Walker, J. (2014). <em>Fundamentals of Physics</em> (10th ed.). Hoboken: John Wiley & Sons.</li>
+              <li>Kemendikbudristek. (2022). <em>Panduan Pembelajaran Ilmu Pengetahuan Alam Berbasis Inkuiri dan Projek</em>. Jakarta: Kementerian Pendidikan, Kebudayaan, Riset, dan Teknologi.</li>
+              <li>McGee, H. (2004). <em>On Food and Cooking: The Science and Lore of the Kitchen</em>. New York: Scribner.</li>
+              <li>Pratama, A. S. (2024). <em>Petualangan Seru dalam Sains: Eksperimen Menyenangkan dan Praktis untuk Semua Kalangan</em>. Bantul, Yogyakarta: Kaizen Sarana Edukasi.</li>
+            </ul>
+          </div>
+        `
+      },
+
+      // ==================== HALAMAN 40: SAMPUL BELAKANG ====================
+      {
+        num: 40,
+        section: "Sampul Belakang",
+        isCover: true,
+        html: `
+          <div class="h-full flex flex-col justify-between rounded-xl bg-gradient-to-br from-slate-900 via-teal-950 to-slate-900 text-white p-5 sm:p-7 border border-teal-500/30">
+            <div>
+              <span class="inline-block px-3 py-1 rounded-full bg-teal-500/20 border border-teal-400/30 text-teal-300 text-[11px] font-bold uppercase tracking-wider mb-3">
+                Tentang Buku Ini
+              </span>
+              <h2 class="text-xl sm:text-2xl font-extrabold text-amber-300 leading-snug mb-3">
+                Menjadikan Rumah & Sekolah sebagai Laboratorium Penuh Keajaiban
+              </h2>
+              <p class="text-xs sm:text-sm text-slate-200 leading-relaxed mb-3 text-justify">
+                Pernahkah kamu bertanya mengapa bunga putih bisa berubah warna saat direndam air berwarna? Bagaimana balon karet bisa mengangkat potongan kertas tanpa menyentuhnya? Atau reaksi kimia apa yang membuat roti panggang beraroma begitu harum?
+              </p>
+              <p class="text-xs sm:text-sm text-slate-300 leading-relaxed text-justify">
+                Melalui 10 bab terstruktur yang dilengkapi panduan alat & bahan aman, langkah praktis, ilustrasi edukatif, hingga panduan menyusun <strong>Projek Akhir Sains</strong>, buku ini mengajak pelajar, guru, orang tua, dan siapa saja untuk mencintai sains dengan cara yang menyenangkan!
+              </p>
+            </div>
+
+            <div class="my-3 p-3.5 rounded-xl bg-white/5 border border-white/10 text-xs">
+              <p class="font-bold text-teal-300 mb-1">👨‍🏫 Tentang Penulis</p>
+              <p class="text-slate-300 text-[11px] leading-relaxed">
+                <strong>Andika Setia Pratama</strong> adalah pendidik dan pegiat literasi sains yang berdedikasi menghadirkan pembelajaran IPA yang kontekstual, eksperimental, dan mudah diakses oleh semua kalangan.
+              </p>
+            </div>
+
+            <div class="border-t border-white/15 pt-3 flex items-center justify-between">
+              <div>
+                <p class="text-sm font-extrabold text-amber-300 tracking-wide">KAIえEN Sarana Edukasi</p>
+                <p class="text-[11px] text-slate-400">Bantul, Daerah Istimewa Yogyakarta • 2024</p>
+              </div>
+              <button type="button" onclick="goToPage(1)" class="px-3.5 py-2 rounded-xl bg-teal-600 hover:bg-teal-500 text-white text-xs font-bold transition shadow">
+                ↺ Kembali ke Sampul
+              </button>
+            </div>
+          </div>
+        `
+      }
+    ];
+
+    /*************************************************************************
+     * 3. STATE APLIKASI & RESPONSIVE SPREAD LOGIC
+     *************************************************************************/
+    let currentPage = 1; // 1..40
+    let bookmarks = JSON.parse(localStorage.getItem('kaizen_ebook_bookmarks') || '[]');
+    let activeSearchQuery = '';
+    let pendulumLength = 80;
+    let pendulumAnimId = null;
+
+    const leftPageEl = document.getElementById('leftPage');
+    const rightPageEl = document.getElementById('rightPage');
+    const bookContainerEl = document.getElementById('bookContainer');
+    const pageInputEl = document.getElementById('pageInput');
+    const spreadIndicatorEl = document.getElementById('spreadIndicator');
+    const readingProgressEl = document.getElementById('readingProgress');
+    const btnPrevEl = document.getElementById('btnPrev');
+    const btnNextEl = document.getElementById('btnNext');
+
+    function isDesktopSpread() {
+      return window.innerWidth >= 1024; // Breakpoint lg Tailwind
+    }
+
+    function showToast(msg) {
+      const toast = document.getElementById('toastMsg');
+      toast.textContent = msg;
+      toast.classList.remove('opacity-0');
+      clearTimeout(window._toastTimer);
+      window._toastTimer = setTimeout(() => {
+        toast.classList.add('opacity-0');
+      }, 2200);
+    }
+
+    /* Highlight kata kunci pencarian pada teks HTML tanpa merusak tag */
+    function highlightText(html, query) {
+      if (!query || query.trim().length < 2) return html;
+      const escaped = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      const regex = new RegExp(`(${escaped})(?![^<]*>)`, 'gi');
+      return html.replace(regex, '<mark class="search-hl">$1</mark>');
+    }
+
+    /* Merender satu halaman ke elemen DOM */
+    function buildPageMarkup(pageObj, side) {
+      if (!pageObj) {
+        return `<div class="h-full flex items-center justify-center text-slate-400 text-xs italic">Akhir Buku</div>`;
+      }
+      if (pageObj.isCover) {
+        return `<div class="h-full overflow-y-auto page-scroll">${pageObj.html}</div>`;
+      }
+      const processedHtml = highlightText(pageObj.html, activeSearchQuery);
+      return `
+        <!-- Header Halaman Buku -->
+        <div class="flex items-center justify-between text-[10px] sm:text-[11px] font-sansUi text-slate-500 dark:text-slate-400 border-b border-slate-300/60 dark:border-slate-700/60 pb-1.5 mb-2.5 shrink-0">
+          <span class="truncate font-medium">${side === 'left' ? 'Petualangan Seru dalam Sains' : pageObj.section}</span>
+          <span class="truncate hidden sm:inline">${side === 'left' ? pageObj.section : 'Kaizen Sarana Edukasi'}</span>
+        </div>
+
+        <!-- Konten Utama Halaman -->
+        <div class="flex-1 overflow-y-auto page-scroll pr-1">
+          ${processedHtml}
+        </div>
+
+        <!-- Footer Nomor Halaman -->
+        <div class="flex items-center ${side === 'left' ? 'justify-start' : 'justify-end'} pt-2 mt-1 border-t border-slate-300/60 dark:border-slate-700/60 text-xs font-sansUi font-bold text-slate-600 dark:text-slate-300 shrink-0">
+          <span class="px-2.5 py-0.5 rounded-full bg-slate-200/70 dark:bg-slate-800">Halaman ${pageObj.num}</span>
+        </div>
+      `;
+    }
+
+    /* Render Tampilan Buku (1 Halaman Mobile vs 2 Halaman Spread Desktop) */
+    function renderBook(flipDirection = null) {
+      if (flipDirection) {
+        bookContainerEl.classList.remove('anim-flip-next', 'anim-flip-prev');
+        void bookContainerEl.offsetWidth; // trigger reflow
+        bookContainerEl.classList.add(flipDirection === 'next' ? 'anim-flip-next' : 'anim-flip-prev');
+        playPageFlipSound();
+      }
+
+      const desktop = isDesktopSpread();
+
+      if (!desktop) {
+        // MODE 1 HALAMAN (Mobile & Tablet)
+        bookContainerEl.classList.remove('lg:grid-cols-2');
+        bookContainerEl.classList.add('max-w-xl');
+        leftPageEl.classList.remove('lg:rounded-r-none', 'spine-shadow-left');
+        leftPageEl.classList.add('rounded-2xl', 'single-page-shadow');
+        rightPageEl.classList.add('hidden');
+
+        const pObj = bookPages[currentPage - 1];
+        leftPageEl.innerHTML = buildPageMarkup(pObj, 'left');
+        spreadIndicatorEl.textContent = pObj.section;
+      } else {
+        // MODE 2 HALAMAN BERDAMPINGAN (Desktop Spread)
+        // Halaman 1 (Sampul Depan) & Halaman 40 (Sampul Belakang) tampil tunggal terpusat agar estetis
+        if (currentPage === 1 || currentPage === 40) {
+          bookContainerEl.classList.remove('lg:grid-cols-2');
+          bookContainerEl.classList.add('max-w-xl');
+          leftPageEl.classList.remove('lg:rounded-r-none', 'spine-shadow-left');
+          leftPageEl.classList.add('rounded-2xl', 'single-page-shadow');
+          rightPageEl.classList.add('hidden');
+
+          const pObj = bookPages[currentPage - 1];
+          leftPageEl.innerHTML = buildPageMarkup(pObj, 'left');
+          spreadIndicatorEl.textContent = currentPage === 1 ? 'Sampul Depan' : 'Sampul Belakang';
+        } else {
+          // Pasangkan halaman genap di kiri & ganjil di kanan (misal: 2-3, 4-5, ..., 38-39)
+          const leftNum = currentPage % 2 === 0 ? currentPage : currentPage - 1;
+          const rightNum = leftNum + 1;
+
+          bookContainerEl.classList.add('lg:grid-cols-2');
+          bookContainerEl.classList.remove('max-w-xl');
+          leftPageEl.classList.add('lg:rounded-r-none', 'spine-shadow-left');
+          leftPageEl.classList.remove('single-page-shadow');
+          rightPageEl.classList.remove('hidden');
+
+          leftPageEl.innerHTML = buildPageMarkup(bookPages[leftNum - 1], 'left');
+          rightPageEl.innerHTML = buildPageMarkup(bookPages[rightNum - 1], 'right');
+          spreadIndicatorEl.textContent = `Halaman ${leftNum} – ${rightNum}`;
+        }
+      }
+
+      // Update Input Nomor Halaman, Progress Bar & Tombol
+      pageInputEl.value = currentPage;
+      const pct = Math.round((currentPage / bookPages.length) * 100);
+      readingProgressEl.style.width = `${pct}%`;
+
+      btnPrevEl.disabled = currentPage <= 1;
+      btnNextEl.disabled = desktop
+        ? currentPage >= 40
+        : currentPage >= bookPages.length;
+
+      updateBookmarkIcon();
+      initInteractiveSimulations();
+    }
+
+    function goToPage(pageNum, direction = 'next') {
+      const target = Math.max(1, Math.min(bookPages.length, Number(pageNum) || 1));
+      if (target === currentPage) return;
+      const dir = target > currentPage ? 'next' : 'prev';
+      currentPage = target;
+      renderBook(dir);
+    }
+
+    function nextPage() {
+      const desktop = isDesktopSpread();
+      if (desktop) {
+        if (currentPage === 1) goToPage(2, 'next');
+        else if (currentPage >= 38) goToPage(40, 'next');
+        else {
+          const leftNum = currentPage % 2 === 0 ? currentPage : currentPage - 1;
+          goToPage(leftNum + 2, 'next');
+        }
+      } else {
+        if (currentPage < bookPages.length) goToPage(currentPage + 1, 'next');
+      }
+    }
+
+    function prevPage() {
+      const desktop = isDesktopSpread();
+      if (desktop) {
+        if (currentPage === 40) goToPage(38, 'prev');
+        else if (currentPage <= 3) goToPage(1, 'prev');
+        else {
+          const leftNum = currentPage % 2 === 0 ? currentPage : currentPage - 1;
+          goToPage(leftNum - 2, 'prev');
+        }
+      } else {
+        if (currentPage > 1) goToPage(currentPage - 1, 'prev');
+      }
+    }
+
+    /*************************************************************************
+     * 4. SIMULASI INTERAKTIF DALAM HALAMAN (BANDUL & LAVA LAMP)
+     *************************************************************************/
+    function updatePendulumLength(val) {
+      pendulumLength = Number(val);
+      const label = document.getElementById('pendulumLenVal');
+      if (label) label.textContent = pendulumLength;
+    }
+
+    function initInteractiveSimulations() {
+      // Hentikan loop bandul sebelumnya jika ada
+      if (pendulumAnimId) {
+        cancelAnimationFrame(pendulumAnimId);
+        pendulumAnimId = null;
+      }
+
+      const canvas = document.getElementById('pendulumCanvas');
+      if (canvas) {
+        const ctx = canvas.getContext('2d');
+        canvas.width = canvas.clientWidth || 320;
+        canvas.height = canvas.clientHeight || 112;
+
+        let startTime = performance.now();
+        function drawPendulum(now) {
+          if (!document.body.contains(canvas)) return;
+          const t = (now - startTime) / 1000;
+          // Frekuensi sudut omega = sqrt(g / L)
+          const omega = Math.sqrt(980 / pendulumLength);
+          const maxAngle = 0.42; // radian (~24 derajat)
+          const angle = maxAngle * Math.cos(omega * t);
+
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+          const originX = canvas.width / 2;
+          const originY = 12;
+          const visualLen = 35 + (pendulumLength - 40) * 0.65;
+
+          const bobX = originX + visualLen * Math.sin(angle);
+          const bobY = originY + visualLen * Math.cos(angle);
+
+          // Tiang penyangga
+          ctx.strokeStyle = '#64748b';
+          ctx.lineWidth = 3;
+          ctx.beginPath();
+          ctx.moveTo(originX - 40, originY);
+          ctx.lineTo(originX + 40, originY);
+          ctx.stroke();
+
+          // Tali
+          ctx.strokeStyle = '#e2e8f0';
+          ctx.lineWidth = 2;
+          ctx.beginPath();
+          ctx.moveTo(originX, originY);
+          ctx.lineTo(bobX, bobY);
+          ctx.stroke();
+
+          // Beban Bandul
+          ctx.fillStyle = '#f59e0b';
+          ctx.beginPath();
+          ctx.arc(bobX, bobY, 10, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.strokeStyle = '#fef3c7';
+          ctx.lineWidth = 1.5;
+          ctx.stroke();
+
+          pendulumAnimId = requestAnimationFrame(drawPendulum);
+        }
+        pendulumAnimId = requestAnimationFrame(drawPendulum);
+      }
+    }
+
+    function triggerLavaBubbles() {
+      const box = document.getElementById('lavaSimBox');
+      if (!box) return;
+      for (let i = 0; i < 12; i++) {
+        const bubble = document.createElement('span');
+        const size = 6 + Math.random() * 10;
+        const left = 10 + Math.random() * 80;
+        bubble.style.cssText = `
+          position: absolute;
+          bottom: 8px;
+          left: ${left}%;
+          width: ${size}px;
+          height: ${size}px;
+          border-radius: 9999px;
+          background: rgba(244, 63, 94, 0.85);
+          border: 1px solid rgba(255,255,255,0.6);
+          transition: transform ${1.4 + Math.random()}s ease-in-out, opacity 1.8s ease;
+        `;
+        box.appendChild(bubble);
+        requestAnimationFrame(() => {
+          bubble.style.transform = `translateY(-${55 + Math.random() * 25}px)`;
+        });
+        setTimeout(() => {
+          bubble.style.transform = `translateY(0px)`;
+          bubble.style.opacity = '0';
+        }, 1400);
+        setTimeout(() => bubble.remove(), 3200);
+      }
+      showToast('Gas CO₂ mengangkat gelembung air berwarna ke atas!');
+    }
+
+    /*************************************************************************
+     * 5. KUIS INTERAKTIF (PETUNJUK & KUNCI JAWABAN)
+     *************************************************************************/
+    window.toggleHint = function(id) {
+      const el = document.getElementById(`hint-${id}`);
+      if (el) el.classList.toggle('hidden');
+    };
+
+    window.checkQuizAnswer = function(id) {
+      const ansEl = document.getElementById(`ans-${id}`);
+      const statusEl = document.getElementById(`status-${id}`);
+      if (ansEl) ansEl.classList.remove('hidden');
+      if (statusEl) statusEl.classList.remove('hidden');
+      showToast('Pembahasan jawaban ditampilkan!');
+    };
+
+    /*************************************************************************
+     * 6. DRAWER: DAFTAR ISI, PENCARIAN & BOOKMARK
+     *************************************************************************/
+    const sideDrawer = document.getElementById('sideDrawer');
+    const drawerBackdrop = document.getElementById('drawerBackdrop');
+
+    function openDrawer(tab = 'toc') {
+      sideDrawer.classList.remove('-translate-x-full');
+      drawerBackdrop.classList.remove('hidden');
+      switchDrawerTab(tab);
+    }
+
+    function closeDrawer() {
+      sideDrawer.classList.add('-translate-x-full');
+      drawerBackdrop.classList.add('hidden');
+    }
+
+    function switchDrawerTab(tabName) {
+      document.querySelectorAll('.drawer-tab').forEach(btn => {
+        const active = btn.dataset.tab === tabName;
+        btn.classList.toggle('bg-teal-600', active);
+        btn.classList.toggle('text-white', active);
+        btn.classList.toggle('text-slate-400', !active);
+      });
+      document.getElementById('tabToc').classList.toggle('hidden', tabName !== 'toc');
+      document.getElementById('tabSearch').classList.toggle('hidden', tabName !== 'search');
+      document.getElementById('tabBookmarks').classList.toggle('hidden', tabName !== 'bookmarks');
+
+      if (tabName === 'search') {
+        setTimeout(() => document.getElementById('searchInput').focus(), 100);
+      }
+    }
+
+    /* Render Daftar Isi di Sidebar */
+    function renderSidebarToc() {
+      const container = document.getElementById('tabToc');
+      container.innerHTML = tocItems.map(item => `
+        <button type="button" onclick="goToPage(${item.page}); closeDrawer();"
+          class="w-full flex items-center justify-between p-2.5 rounded-xl hover:bg-slate-800 transition text-left group">
+          <span class="text-xs font-medium text-slate-200 group-hover:text-teal-300 pr-2">${item.title}</span>
+          <span class="text-[10px] font-bold px-2 py-0.5 rounded-md bg-slate-800 group-hover:bg-teal-900 text-teal-400 shrink-0">${item.badge}</span>
+        </button>
+      `).join('');
+    }
+
+    /* Pencarian Kata Kunci */
+    const searchInput = document.getElementById('searchInput');
+    const searchResultsEl = document.getElementById('searchResults');
+    const searchStatusEl = document.getElementById('searchStatus');
+    const btnClearSearch = document.getElementById('btnClearSearch');
+
+    searchInput.addEventListener('input', (e) => {
+      const q = e.target.value.trim();
+      activeSearchQuery = q;
+      btnClearSearch.classList.toggle('hidden', q.length === 0);
+
+      if (q.length < 2) {
+        searchStatusEl.textContent = 'Masukkan minimal 2 huruf untuk mencari di seluruh buku.';
+        searchResultsEl.innerHTML = '';
+        renderBook();
+        return;
+      }
+
+      const matches = [];
+      const tempDiv = document.createElement('div');
+      bookPages.forEach(p => {
+        tempDiv.innerHTML = p.html;
+        const plainText = tempDiv.textContent || '';
+        const idx = plainText.toLowerCase().indexOf(q.toLowerCase());
+        if (idx !== -1) {
+          const start = Math.max(0, idx - 35);
+          const end = Math.min(plainText.length, idx + q.length + 55);
+          const snippet = (start > 0 ? '...' : '') + plainText.slice(start, end).trim() + (end < plainText.length ? '...' : '');
+          matches.push({ page: p.num, section: p.section, snippet });
+        }
+      });
+
+      searchStatusEl.textContent = `Ditemukan ${matches.length} halaman yang cocok dengan "${q}"`;
+      searchResultsEl.innerHTML = matches.map(m => `
+        <button type="button" onclick="goToPage(${m.page}); closeDrawer();"
+          class="w-full text-left p-2.5 rounded-xl bg-slate-800/80 hover:bg-slate-800 border border-slate-700 transition">
+          <div class="flex items-center justify-between text-[11px] font-bold text-teal-400 mb-1">
+            <span>${m.section}</span>
+            <span>Hal. ${m.page}</span>
+          </div>
+          <p class="text-[11px] text-slate-300 line-clamp-2">${highlightText(m.snippet, q)}</p>
+        </button>
+      `).join('');
+
+      renderBook();
+    });
+
+    btnClearSearch.addEventListener('click', () => {
+      searchInput.value = '';
+      activeSearchQuery = '';
+      btnClearSearch.classList.add('hidden');
+      searchStatusEl.textContent = 'Masukkan minimal 2 huruf untuk mencari di seluruh buku.';
+      searchResultsEl.innerHTML = '';
+      renderBook();
+    });
+
+    /* Bookmark Management */
+    function updateBookmarkIcon() {
+      const icon = document.getElementById('iconBookmark');
+      const isSaved = bookmarks.includes(currentPage);
+      icon.setAttribute('fill', isSaved ? '#f59e0b' : 'none');
+      icon.setAttribute('stroke', isSaved ? '#f59e0b' : 'currentColor');
+      document.getElementById('bmCount').textContent = bookmarks.length;
+    }
+
+    function renderBookmarksList() {
+      const container = document.getElementById('tabBookmarks');
+      if (bookmarks.length === 0) {
+        container.innerHTML = `<p class="text-xs text-slate-400 text-center py-6">Belum ada halaman yang ditandai. Klik ikon pita di bilah atas untuk menandai halaman.</p>`;
+        return;
+      }
+      container.innerHTML = bookmarks.sort((a, b) => a - b).map(pNum => {
+        const pObj = bookPages[pNum - 1];
+        return `
+          <div class="flex items-center justify-between p-2.5 rounded-xl bg-slate-800 border border-slate-700">
+            <button type="button" onclick="goToPage(${pNum}); closeDrawer();" class="text-left flex-1">
+              <p class="text-xs font-bold text-amber-300">Halaman ${pNum}</p>
+              <p class="text-[11px] text-slate-300 truncate">${pObj ? pObj.section : ''}</p>
+            </button>
+            <button type="button" onclick="removeBookmark(${pNum})" class="p-1.5 text-slate-400 hover:text-rose-400 text-xs" title="Hapus Penanda">✕</button>
+          </div>
+        `;
+      }).join('');
+    }
+
+    window.removeBookmark = function(pNum) {
+      bookmarks = bookmarks.filter(b => b !== pNum);
+      localStorage.setItem('kaizen_ebook_bookmarks', JSON.stringify(bookmarks));
+      updateBookmarkIcon();
+      renderBookmarksList();
+      showToast(`Penanda halaman ${pNum} dihapus`);
+    };
+
+    document.getElementById('btnBookmark').addEventListener('click', () => {
+      if (bookmarks.includes(currentPage)) {
+        removeBookmark(currentPage);
+      } else {
+        bookmarks.push(currentPage);
+        localStorage.setItem('kaizen_ebook_bookmarks', JSON.stringify(bookmarks));
+        updateBookmarkIcon();
+        renderBookmarksList();
+        showToast(`Halaman ${currentPage} ditambahkan ke Penanda!`);
+      }
+    });
+
+    /*************************************************************************
+     * 7. PENGATURAN TEMA, UKURAN HURUF, SUARA, KEYBOARD & SWIPE
+     *************************************************************************/
+    // Tema Baca (Light / Sepia / Dark)
+    document.querySelectorAll('.theme-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const theme = btn.dataset.theme;
+        document.body.classList.remove('theme-sepia', 'theme-dark');
+        if (theme === 'sepia') document.body.classList.add('theme-sepia');
+        if (theme === 'dark') document.body.classList.add('theme-dark');
+
+        document.querySelectorAll('.theme-btn').forEach(b => {
+          b.classList.remove('bg-white', 'text-slate-900', 'font-bold', 'shadow-sm');
+        });
+        btn.classList.add('bg-white', 'text-slate-900', 'font-bold', 'shadow-sm');
+      });
+    });
+
+    // Ukuran Huruf
+    document.querySelectorAll('.font-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const sizeMap = { small: '13.5px', medium: '15px', large: '17px' };
+        const chosen = btn.dataset.font;
+        document.documentElement.style.setProperty('--book-font-size', sizeMap[chosen]);
+
+        document.querySelectorAll('.font-btn').forEach(b => {
+          const match = b.dataset.font === chosen;
+          b.classList.toggle('bg-teal-600', match);
+          b.classList.toggle('text-white', match);
+        });
+      });
+    });
+
+    // Suara Kertas
+    document.getElementById('btnSound').addEventListener('click', () => {
+      soundEnabled = !soundEnabled;
+      document.getElementById('iconSoundOn').classList.toggle('hidden', !soundEnabled);
+      document.getElementById('iconSoundOff').classList.toggle('hidden', soundEnabled);
+      showToast(soundEnabled ? 'Suara membalik kertas diaktifkan' : 'Suara membalik kertas dimatikan');
+    });
+
+    // Event Listener Navigasi
+    document.getElementById('btnToggleDrawer').addEventListener('click', () => openDrawer('toc'));
+    document.getElementById('btnOpenSearch').addEventListener('click', () => openDrawer('search'));
+    document.getElementById('btnCloseDrawer').addEventListener('click', closeDrawer);
+    drawerBackdrop.addEventListener('click', closeDrawer);
+
+    document.querySelectorAll('.drawer-tab').forEach(btn => {
+      btn.addEventListener('click', () => switchDrawerTab(btn.dataset.tab));
+    });
+
+    btnPrevEl.addEventListener('click', prevPage);
+    btnNextEl.addEventListener('click', nextPage);
+
+    document.getElementById('jumpPageForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      goToPage(pageInputEl.value);
+    });
+
+    // Keyboard Arrow Keys
+    document.addEventListener('keydown', (e) => {
+      if (['INPUT', 'TEXTAREA'].includes(document.activeElement.tagName)) return;
+      if (e.key === 'ArrowRight') nextPage();
+      if (e.key === 'ArrowLeft') prevPage();
+      if (e.key === 'Escape') closeDrawer();
+    });
+
+    // Touch Swipe Gestures
+    let touchStartX = 0;
+    let touchStartY = 0;
+    const touchArea = document.getElementById('touchArea');
+
+    touchArea.addEventListener('touchstart', (e) => {
+      touchStartX = e.changedTouches[0].screenX;
+      touchStartY = e.changedTouches[0].screenY;
+    }, { passive: true });
+
+    touchArea.addEventListener('touchend', (e) => {
+      const dx = e.changedTouches[0].screenX - touchStartX;
+      const dy = e.changedTouches[0].screenY - touchStartY;
+      // Pastikan gerakan horizontal dominan agar tidak bentrok dengan scroll vertikal
+      if (Math.abs(dx) > 55 && Math.abs(dx) > Math.abs(dy) * 1.4) {
+        if (dx < 0) nextPage();
+        else prevPage();
+      }
+    }, { passive: true });
+
+    // Responsive Resize Listener
+    let resizeTimer;
+    window.addEventListener('resize', () => {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(() => renderBook(), 150);
+    });
+
+    // Inisialisasi Awal
+    renderSidebarToc();
+    renderBookmarksList();
+    renderBook();
+  </script>
+</body>
+</html>
